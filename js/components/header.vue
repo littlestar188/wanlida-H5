@@ -5,14 +5,14 @@
 				<img src="/wanlida/img/icon_logo@1x.png" alt="" srcset="/wanlida/img/icon_logo@2x.png 2x" >
 			</div>
 			<div class="header-right left">
-				<p class="title">空气净化器KJ-581D</p>
+				<div class="title">空气净化器KJ-581D</div>
 				<small>SN:16SAPEG0020C</small>
 			</div>
 			<div class="clear"></div>
 		</div>
 
 		<div class="radius">
-			
+			<img src="/wanlida/img/top_bg@1x.png" alt="" srcset="/wanlida/img/top_bg@2x.png 2x">
 		</div>
 
 		<div class="info">
@@ -32,7 +32,7 @@
 			</div>
 			<div class="info-PM right">
 				<div>当前PM2.5</div>
-				<div class="num">270</div>
+				<div class="num danger">270</div>
 			</div>
 		</div>
 	</div>
@@ -45,6 +45,7 @@
 		height:;
 		-width:100%;
 		padding:2% 11%;
+		padding-top:4%;
 		background-color:#E60012;
 		color:#fff;
 	}
@@ -71,14 +72,32 @@
 	}
 	.num{
 		font-size: 0.775rem;
-		color: #FF4C50;
 		padding-top: 0.4rem;
 		text-align: center;
 		font-weight:bold;
 	}
+	.num.normal{
+		color: #7ED321;
+		/*小于100*/
+	}
+	.num.alarm{
+		color: #F5A623;
+		/*101-150*/
+	}
+	.num.danger{
+		color: #FF4C50;
+		/*>150*/
+	}
 	.radius{
-		height:1.5rem;
-		width:100%;
+		position: relative;
+    	top: 0;
+		height:1.2rem;
+		width:100%;  	
+    	background: #fff;
+	}
+	.radius>img{
+		position: absolute;
+    	top: 0;
 	}
 </style>
 <script>

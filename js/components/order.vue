@@ -2,7 +2,7 @@
 	
 	<div class="order-content">			
 		<div class="timing">
-			<div class="clock">04:56:32</div>
+			<div class="clock danger">04:56:32</div>
 			<small>剩余时间</small>
 		</div>
 		<div class="order-info">
@@ -39,6 +39,9 @@
 		position: relative;
 		width:90%;
 		margin:0 auto;
+	}
+	.timing .clock.danger{
+		color:#FF4C50;
 	}
 	.order-content .order-info p{
 		text-align: left;

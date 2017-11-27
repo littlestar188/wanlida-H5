@@ -26,7 +26,7 @@
 							<p class="modal modal_2">分时租赁模式</p>
 							<p>文字说明，解释规则</p>
 							<p>
-								<ul class="time-choice">
+								<ul class="time-choice  active">
 									<li class="time-modal active">
 										<span class="tnum">3</span>小时
 								    </li>
@@ -50,7 +50,7 @@
 							<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
 						</i>
 						<div class="desc-text">	
-							<p class="modal modal_3">节日免费模式</p>
+							<p class="modal modal_3">免费模式</p>
 							<p>文字说明，解释规则</p>
 						</div>					
 					</div>
@@ -138,8 +138,18 @@ line-height:2rem; */
         border-radius: 0.7rem;
         margin-right:0.5rem;
 	}
-	.time-choice .time-modal.active{
+	.time-choice .time-modal:first-child{
 		background-color:#D9D9D9;
+		color:#fff;
+	}
+	.time-choice.active .time-modal{
+		border-color:#F5A623;
+		color:#F5A623;
+		background-color:#fff;
+	}
+	.time-choice.active .time-modal.active{
+		background-color:#F5A623;
+		border-color:#F5A623;
 		color:#fff;
 	}
 	.time-choice .time-modal .tnum{

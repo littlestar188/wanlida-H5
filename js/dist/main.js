@@ -19228,8 +19228,8 @@ Vue.component("mt-loadMore", __WEBPACK_IMPORTED_MODULE_0_mint_ui__["Loadmore"]);
 //引用组件
 var header = __webpack_require__ (16);
 var home = __webpack_require__ (22);
-var order = __webpack_require__ (47);
-var state = __webpack_require__ (42);
+var order = __webpack_require__ (27);
+var state = __webpack_require__ (32);
 /*创建路由*/
 var router = new VueRouter({
   routes:[
@@ -24646,7 +24646,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\tpadding:2% 11%;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\tpadding: 2% 3%;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\tpadding:4% 11%;\n\t\tpadding-bottom:0;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.6rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tcolor: #FF4C50;\n\t\tpadding-top: 0.4rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.radius{\n\t\theight:1.5rem;\n\t\twidth:100%;\n}\n", ""]);
+exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\tpadding:2% 11%;\n\t\tpadding-top:4%;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\tpadding: 2% 3%;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\tpadding:4% 11%;\n\t\tpadding-bottom:0;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.6rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.4rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:1.2rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n    \ttop: 0;\n}\n", ""]);
 
 // exports
 
@@ -24771,6 +24771,25 @@ module.exports = function listToStyles (parentId, list) {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -24796,13 +24815,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })]), _vm._v(" "), _c('div', {
     staticClass: "header-right left"
-  }, [_c('p', {
+  }, [_c('div', {
     staticClass: "title"
   }, [_vm._v("空气净化器KJ-581D")]), _vm._v(" "), _c('small', [_vm._v("SN:16SAPEG0020C")])]), _vm._v(" "), _c('div', {
     staticClass: "clear"
   })]), _vm._v(" "), _c('div', {
     staticClass: "radius"
-  }), _vm._v(" "), _c('div', {
+  }, [_c('img', {
+    attrs: {
+      "src": "/wanlida/img/top_bg@1x.png",
+      "alt": "",
+      "srcset": "/wanlida/img/top_bg@2x.png 2x"
+    }
+  })]), _vm._v(" "), _c('div', {
     staticClass: "info"
   }, [_c('div', {
     staticClass: "info-base left"
@@ -24831,7 +24856,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   })]), _vm._v(" "), _c('span', [_vm._v("漳州百香远山酒店")])])]), _vm._v(" "), _c('div', {
     staticClass: "info-PM right"
   }, [_c('div', [_vm._v("当前PM2.5")]), _vm._v(" "), _c('div', {
-    staticClass: "num"
+    staticClass: "num danger"
   }, [_vm._v("270")])])])])
 }]}
 module.exports.render._withStripped = true
@@ -24915,7 +24940,7 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\tpadding: 0.3rem  0;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.6);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_3{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal.active{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n", ""]);
+exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\tpadding: 0.3rem  0;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.6);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_3{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n", ""]);
 
 // exports
 
@@ -24924,6 +24949,16 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\tpadding: 0
 /* 25 */
 /***/ (function(module, exports) {
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -25128,7 +25163,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('p', {
     staticClass: "modal modal_2"
   }, [_vm._v("分时租赁模式")]), _vm._v(" "), _c('p', [_vm._v("文字说明，解释规则")]), _vm._v(" "), _c('p', [_c('ul', {
-    staticClass: "time-choice"
+    staticClass: "time-choice  active"
   }, [_c('li', {
     staticClass: "time-modal active"
   }, [_c('span', {
@@ -25163,7 +25198,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "desc-text"
   }, [_c('p', {
     staticClass: "modal modal_3"
-  }, [_vm._v("节日免费模式")]), _vm._v(" "), _c('p', [_vm._v("文字说明，解释规则")])])]), _vm._v(" "), _c('div', {
+  }, [_vm._v("免费模式")]), _vm._v(" "), _c('p', [_vm._v("文字说明，解释规则")])])]), _vm._v(" "), _c('div', {
     staticClass: "modal-price"
   }, [_c('span', {
     staticClass: "price free"
@@ -25178,167 +25213,18 @@ if (false) {
 }
 
 /***/ }),
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
-__webpack_require__(43)
+__webpack_require__(28)
 
 var Component = __webpack_require__(2)(
   /* script */
-  __webpack_require__(45),
+  __webpack_require__(30),
   /* template */
-  __webpack_require__(46),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\state.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] state.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3bc1a5cf", Component.options)
-  } else {
-    hotAPI.reload("data-v-3bc1a5cf", Component.options)
-  }
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(44);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(1)("ae5be5b2", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tbackground-color: #fff;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports) {
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-module.exports = {
-
-}
-
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('div', {
-    staticClass: "state-content"
-  }, [_c('img', {
-    attrs: {
-      "src": "/wanlida/img/img_use@1x.png",
-      "alt": "",
-      "srcset": "/wanlida/img/img_use@2x.png 2x"
-    }
-  }), _vm._v(" "), _c('p', [_vm._v("设备已经被使用")])])])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-3bc1a5cf", module.exports)
-  }
-}
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-__webpack_require__(48)
-
-var Component = __webpack_require__(2)(
-  /* script */
-  __webpack_require__(50),
-  /* template */
-  __webpack_require__(51),
+  __webpack_require__(31),
   /* scopeId */
   null,
   /* cssModules */
@@ -25365,13 +25251,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 48 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(49);
+var content = __webpack_require__(29);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -25391,7 +25277,7 @@ if(false) {
 }
 
 /***/ }),
-/* 49 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(0)();
@@ -25399,15 +25285,18 @@ exports = module.exports = __webpack_require__(0)();
 
 
 // module
-exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-content .timing,\n\t.order-content .order-info{\n\t\tbackground-color: #fff;\n\t\tmargin-bottom:0.6rem;\n\t\tpadding: 0.6rem 0;\n}\n.timing p{\n\t\tpadding-left:0;\n}\n.timing>small{\n\t\tcolor:#9B9B9B;\n}\n.timing .clock{\n\t\tcolor:#72BA16;\n\t\tfont-size:2rem;\n\t\tfont-weight: normal;\n}\n.order-content .order-info{\n\t\tposition: relative;\n\t\twidth:90%;\n\t\tmargin:0 auto;\n}\n.order-content .order-info p{\n\t\ttext-align: left;\n}\n.order-content .order-info .red-line{\n\t\tposition: absolute;\n\t    display: block;\n\t    width: 0.2rem;\n\t    height: 50%;\n\t    top: 50%;\n\t    margin-top: -5.8%;\n\t    background-color: #E60012;\n}\n\t\n", ""]);
+exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-content .timing,\n\t.order-content .order-info{\n\t\tbackground-color: #fff;\n\t\tmargin-bottom:0.6rem;\n\t\tpadding: 0.6rem 0;\n}\n.timing p{\n\t\tpadding-left:0;\n}\n.timing>small{\n\t\tcolor:#9B9B9B;\n}\n.timing .clock{\n\t\tcolor:#72BA16;\n\t\tfont-size:2rem;\n\t\tfont-weight: normal;\n}\n.order-content .order-info{\n\t\tposition: relative;\n\t\twidth:90%;\n\t\tmargin:0 auto;\n}\n.timing .clock.danger{\n\t\tcolor:#FF4C50;\n}\n.order-content .order-info p{\n\t\ttext-align: left;\n}\n.order-content .order-info .red-line{\n\t\tposition: absolute;\n\t    display: block;\n\t    width: 0.2rem;\n\t    height: 50%;\n\t    top: 50%;\n\t    margin-top: -5.8%;\n\t    background-color: #E60012;\n}\n\t\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 50 */
+/* 30 */
 /***/ (function(module, exports) {
 
+//
+//
+//
 //
 //
 //
@@ -25471,7 +25360,7 @@ module.exports = {
 
 
 /***/ }),
-/* 51 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -25482,7 +25371,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "timing"
   }, [_c('div', {
-    staticClass: "clock"
+    staticClass: "clock danger"
   }, [_vm._v("04:56:32")]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])]), _vm._v(" "), _c('div', {
     staticClass: "order-info"
   }, [_c('span', {
@@ -25494,6 +25383,140 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-be827be8", module.exports)
+  }
+}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(33)
+
+var Component = __webpack_require__(2)(
+  /* script */
+  __webpack_require__(35),
+  /* template */
+  __webpack_require__(36),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\state.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] state.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3bc1a5cf", Component.options)
+  } else {
+    hotAPI.reload("data-v-3bc1a5cf", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(34);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("ae5be5b2", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tbackground-color: #fff;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+module.exports = {
+
+}
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('div', {
+    staticClass: "state-content"
+  }, [_c('img', {
+    attrs: {
+      "src": "/wanlida/img/img_use@1x.png",
+      "alt": "",
+      "srcset": "/wanlida/img/img_use@2x.png 2x"
+    }
+  }), _vm._v(" "), _c('p', [_vm._v("设备已经被使用")])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-3bc1a5cf", module.exports)
   }
 }
 
