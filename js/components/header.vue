@@ -6,7 +6,8 @@
 			</div>
 			<div class="header-right left">
 				<div class="title">空气净化器KJ-581D</div>
-				<small>SN:16SAPEG0020C</small>
+				<small>SN:{{headerdata.sn}}</small>
+				<small></small>
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -21,22 +22,59 @@
 					<i class="icon icon-device">
 						<img src="/wanlida/img/icon_condition@1x.png" alt="" srcset="/wanlida/img/icon_condition@2x.png 2x">
 					</i>
-					<span>设备当前状态：</span><span class="state-value normal">正常</span>
+					<span>设备当前状态：</span><span class="state-value normal">{{$store.state.status|statusfilter}}</span>
 				</div>
 				<div class="device-state item">
 					<i class="icon icon-location">
 						<img src="/wanlida/img/icon_place@1x.png" alt="" srcset="/wanlida/img/icon_place@2x.png 2x">
 					</i>
-					<span>漳州百香远山酒店</span>
+					<span>{{headerdata.province}}{{headerdata.city}}{{headerdata.district}}{{headerdata.address}}</span>
 				</div>
 			</div>
 			<div class="info-PM right">
 				<div>当前PM2.5</div>
-				<div class="num danger">270</div>
+				<div class="num danger">{{headerdata.pm}}</div>
 			</div>
 		</div>
-	</div>
+	</div>	
 </template>
+<script type="text/javascript">
+	module.exports = {
+		props:['message'],
+		data:function(){
+			return {
+				
+			}
+		},
+		computed:{
+			headerdata:function(){
+				return this.message
+			}
+		},
+		filters:{
+			statusfilter:function(value){
+				var result = "";
+				switch(value){
+					case -2:
+						result = "设备繁忙";
+						break;
+					case -1:
+						result = "离线";
+						break;
+					case 0:
+						result = "正常";
+						break;
+					default:
+						result ="故障";
+						break;
+
+				}
+				return result;
+			}
+		}
+		
+	};
+</script>
 <style>
 	.device{
 		margin-bottom: 0.6rem;
@@ -100,6 +138,3 @@
     	top: 0;
 	}
 </style>
-<script>
-	
-</script>

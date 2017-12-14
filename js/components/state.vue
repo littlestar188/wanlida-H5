@@ -2,7 +2,7 @@
 	<div>
 		<div class="state-content">
 			
-			<img src="/wanlida/img/img_use@1x.png" alt="" srcset="/wanlida/img/img_use@2x.png 2x">
+			<img v-bind:src="imageSrc" alt="" srcset="/wanlida/img/img_use@2x.png 2x">
 			<p>设备已经被使用</p>
 		</div>
 	</div>
@@ -21,6 +21,20 @@
 </style>
 <script type="text/javascript">
 	module.exports = {
-
+		/*data:function(){
+			return {
+				imageSrc:""
+			}
+		},
+		methods:{
+			ready:function(){
+				this.imageSrc = this.$route.params.imageSrc;
+				this.url = "#/?sn="+this.sn;
+				console.log(this.sn,this.imageSrc)
+			}
+		},
+		created:function(){
+			this.ready();
+		}*/
 	}
 </script>

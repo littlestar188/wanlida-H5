@@ -9,14 +9,9 @@
 </head>
 <body>
 	<div id="app">
-		<app-header></app-header>
+		<my-header :message.sync="data1" ></my-header>		
 		<router-view></router-view>
-		<div class="state-pay">
-			<p>选择：无模式</p>
-			<div id="pay">
-				<a class="cart">立即支付</a>
-			</div>
-		</div>
+		<my-footer></my-footer>
 	</div>
 
 	<script src="js/dist/main.js"></script>
