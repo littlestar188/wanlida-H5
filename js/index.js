@@ -19,7 +19,6 @@ Vue.component("mt-swipe-item", SwipeItem);
 Vue.component("mt-loadMore", Loadmore);*/
 
 //引用组件
-var app = require ("../app.vue");
 var header = require ("../js/components/header.vue");
 var footer = require ("../js/components/footer.vue");
 var model = require ("../js/components/model.vue");
@@ -30,7 +29,8 @@ var router = new VueRouter({
   routes:[
     {path:'/',component:model},
     {path:'/state',component:state},
-    {path:'/order',component:order}
+    {path:'/order',component:order},
+    {name:"router1",path:"/",component:state}
   ]
 })
 
@@ -68,7 +68,10 @@ var store = new Vuex.Store({
     },
     calstatus(state,num) {
       state.status = num
-    }
+    }/*,
+    calimg(state,str) {
+      state.status = str
+    }*/
   }
 })
 var test = new Vue({
@@ -91,9 +94,15 @@ var test = new Vue({
 
               switch(response.data.status){
                 case -1:
-
-
+                this.$router.push({
+                        name:'router1',
+                        params:{
+                          imgSrc:"img/img_maintain@1x.png"
+                        }
+                })        
               }
+
+              //store.commit('calimg',this.imgSrc);
             })
         }    
   },
@@ -102,7 +111,8 @@ var test = new Vue({
       sn:'',
       status:''
     },
-    sn:""
+    sn:"",
+    imgSrc:""
   },
   store,
   components: {

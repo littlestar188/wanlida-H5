@@ -21,9 +21,10 @@
 </style>
 <script type="text/javascript">
 	module.exports = {
-		/*data:function(){
+		data:function(){
 			return {
-				imageSrc:""
+				imageSrc:"",
+				url:""
 			}
 		},
 		methods:{
@@ -35,6 +36,6 @@
 		},
 		created:function(){
 			this.ready();
-		}*/
+		}
 	}
 </script>

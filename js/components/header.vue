@@ -98,6 +98,13 @@
 		padding-bottom:0;
 		overflow: hidden;
 		background-color:#fff;
+		display:flex;
+	}
+	.device .info-base.left{
+		flex:9;
+	}
+	.device .info-PM.right{
+		flex:3;
 	}
 	.device .info-base .item{
 		padding-bottom:0.6rem;

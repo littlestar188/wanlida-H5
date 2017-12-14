@@ -57,7 +57,8 @@
 					<span class="price free">免费</span>
 				</div>
 			</li>
-		</ul>		
+		</ul>
+		<p>选择：无模式</p>		
 	</div>
 </template>
 <script type="text/javascript">

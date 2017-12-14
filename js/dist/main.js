@@ -9293,7 +9293,6 @@ Vue.component("mt-swipe-item", SwipeItem);
 Vue.component("mt-loadMore", Loadmore);*/
 
 //引用组件
-var app = __webpack_require__ (19);
 var header = __webpack_require__ (28);
 var footer = __webpack_require__ (7);
 var model = __webpack_require__ (6);
@@ -9304,7 +9303,8 @@ var router = new VueRouter({
   routes:[
     {path:'/',component:model},
     {path:'/state',component:state},
-    {path:'/order',component:order}
+    {path:'/order',component:order},
+    {name:"router1",path:"/",component:state}
   ]
 })
 
@@ -9342,7 +9342,10 @@ var store = new Vuex.Store({
     },
     calstatus(state,num) {
       state.status = num
-    }
+    }/*,
+    calimg(state,str) {
+      state.status = str
+    }*/
   }
 })
 var test = new Vue({
@@ -9365,9 +9368,15 @@ var test = new Vue({
 
               switch(response.data.status){
                 case -1:
-
-
+                this.$router.push({
+                        name:'router1',
+                        params:{
+                          imgSrc:"img/img_maintain@1x.png"
+                        }
+                })        
               }
+
+              //store.commit('calimg',this.imgSrc);
             })
         }    
   },
@@ -9376,7 +9385,8 @@ var test = new Vue({
       sn:'',
       status:''
     },
-    sn:""
+    sn:"",
+    imgSrc:""
   },
   store,
   components: {
@@ -25663,12 +25673,7 @@ module.exports = plugin;
 /* (ignored) */
 
 /***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'F:\\wamp\\www\\wanlida\\app.vue'\n    at Error (native)");
-
-/***/ }),
+/* 19 */,
 /* 20 */,
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -25916,6 +25921,7 @@ module.exports = function listToStyles (parentId, list) {
 //
 //
 //
+//
 
 module.exports = {
 
@@ -25963,7 +25969,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "$store.state.free"
     }],
     staticClass: "modal-item"
-  }, [_vm._m(3), _vm._v(" "), _vm._m(4)])])])
+  }, [_vm._m(3), _vm._v(" "), _vm._m(4)])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "modal-desc"
@@ -26038,7 +26044,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "state-pay"
-  }, [_c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _c('div', {
+  }, [_c('div', {
     attrs: {
       "id": "pay"
     }
@@ -26128,7 +26134,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\tpadding:2% 11%;\n\t\tpadding-top:4%;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\tpadding: 2% 3%;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\tpadding:4% 11%;\n\t\tpadding-bottom:0;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.6rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.4rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:1.2rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n    \ttop: 0;\n}\n", ""]);
+exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\tpadding:2% 11%;\n\t\tpadding-top:4%;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\tpadding: 2% 3%;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\tpadding:4% 11%;\n\t\tpadding-bottom:0;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n\t\tdisplay:flex;\n}\n.device .info-base.left{\n\t\tflex:9;\n}\n.device .info-PM.right{\n\t\tflex:3;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.6rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.4rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:1.2rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n    \ttop: 0;\n}\n", ""]);
 
 // exports
 
@@ -26573,9 +26579,10 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 //
 
 module.exports = {
-	/*data:function(){
+	data:function(){
 		return {
-			imageSrc:""
+			imageSrc:"",
+			url:""
 		}
 	},
 	methods:{
@@ -26587,7 +26594,7 @@ module.exports = {
 	},
 	created:function(){
 		this.ready();
-	}*/
+	}
 }
 
 
