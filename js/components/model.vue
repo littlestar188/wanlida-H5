@@ -2,32 +2,19 @@
 	<div class="content">
 		<p>请选择一款模式</p>
 		<ul class="modal-choice">
-			<li class="modal-item active">
-				<div class="modal-desc">
-					<i class="icon icon-selected">
-						<img src="/wanlida/img/pattern_btn_s@1x.png" alt="" srcset="/wanlida/img/pattern_btn_s@2x.png 2x">
-					</i>
-					<div class="desc-text">	
-						<p class="modal modal_1">全租模式</p>
-						<p>文字说明，解释规则</p>
-					</div>					
-				</div>
-				<div class="modal-price">
-					<span class="price-flag">￥</span><span class="price">{{$store.state.sum}}</span>
-				</div>
-			</li>
-			<li class="modal-item">
-				<div class="modal-desc">
-					<i class="icon icon-selected">
+			<li class="modal-item" v-for="(o,eq) in $store.state.model" v-bind:class="[(linum==eq)?'active':'']">
+				<div class="modal-desc" >
+					<i class="icon icon-selected" @click="chose(o,eq)">
 						<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
 					</i>
 					<div class="desc-text">	
-						<p class="modal modal_2">分时租赁模式</p>
-						<p>文字说明，解释规则</p>
-						<p>
-							<ul class="time-choice active">
-								<li class="time-modal"  v-for="(d,eq) in $store.state.list">
+						<p class="modal" v-bind:class="">{{o.name}}</p>
+						<p>{{o.desc}}</p>
+						<p v-show="o.expensesList && o.expensesList.length>0">
+							<ul class="time-choice" v-bind:class="[(linum==2)?'active':'']">
+								<li class="time-modal"  v-for="(d,eq,index) in o.expensesList" @click="expenseChose(d,index)" v-bind:class="[(expenseNum==index)?'active':'']">
 									<span class="tnum">{{d.type}}</span>小时
+									<span class="amount"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
 							    </li>
 								<!-- <li class="time-modal active">
 									<span class="tnum">5</span>小时
@@ -40,23 +27,10 @@
 					</div>					
 				</div>
 				<div class="modal-price">
-					<span class="price-flag">￥</span><span class="price"></span>
+					<span class="price-flag" v-show="!o.expensesList">￥</span><span class="price">{{o.amount}}</span>					
 				</div>
 			</li>
-			<li class="modal-item" v-show="$store.state.free">
-				<div class="modal-desc">
-					<i class="icon icon-selected">
-						<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
-					</i>
-					<div class="desc-text">	
-						<p class="modal modal_3">免费模式</p>
-						<p>文字说明，解释规则</p>
-					</div>					
-				</div>
-				<div class="modal-price">
-					<span class="price free">免费</span>
-				</div>
-			</li>
+			
 		</ul>
 		<p>选择：无模式</p>		
 	</div>
@@ -65,20 +39,25 @@
 	module.exports = {
 		data:function(){
 			return {
-				
+				modalActive:false,
+				modalColor:"",
+				linum:0,
+				expenseNum:0,
+				selectedIcon:""
 			}
 		},
-		mothods:{
-			choiceone:function(){
-
+		methods:{
+			chose:function(value,eq){
+				this.linum = eq;
+				if(qe == 1){
+					this.expenseChose()
+				}
+			},
+			expenseChose:function(value,index){
+				this.expenseNum = index;
 			}
-		},
-		created:function(){
-			
 		}
-	};
-
-	
+	}
 </script>
 <style>
 	.modal-choice{
@@ -87,6 +66,7 @@
 	}
 	.modal-choice .modal-item{
 		display:flex;
+		position:relative;
 		align-items: center;
 		margin-bottom:0.3rem;
 /* 		height:2rem;
@@ -128,10 +108,14 @@ line-height:2rem; */
 		color:#FF4C50;
 		text-align:center;
 	}
-	.modal-price .price-flag{
+	.modal-price .price-flag,
+	.time-choice.time-modal .amount .price-flag
+	.time-choice.active .time-modal .amount .price-flag{
 		font-size:0.465rem;
 	}
-	.modal-price .price{
+	.modal-price .price,
+	.time-choice .time-modal .amount .price,
+	.time-choice.active .time-modal .amount .price{
 		font-size:0.9rem;
 		font-weight: bold;
 	}
@@ -168,9 +152,76 @@ line-height:2rem; */
 	.time-choice .time-modal .tnum{
 		font-size:0.675rem;
 	}
-</style>
-<script type="text/javascript">
-	module.exports = {
-
+	.time-choice .time-modal .amount{
+		color:#FF4C50;
+		text-align:center;
+		position: absolute;
+	    top: 50%;
+	    margin-top: -0.5rem;
+	    left:84%;
 	}
-</script>
+	.time-choice.active .time-modal .amount{
+		color:#FF4C50;
+		text-align:center;
+		position: absolute;
+	    top: 50%;
+	    margin-top: -0.5rem;
+	    left:84%;
+	}
+</style>
+
+<!-- <li class="modal-item active" v-for="o in $store.model">
+				<div class="modal-desc">
+					<i class="icon icon-selected">
+						<img src="/wanlida/img/pattern_btn_s@1x.png" alt="" srcset="/wanlida/img/pattern_btn_s@2x.png 2x">
+					</i>
+					<div class="desc-text">	
+						<p class="modal modal_1">全租模式</p>
+						<p>文字说明，解释规则</p>
+					</div>					
+				</div>
+				<div class="modal-price">
+					<span class="price-flag">￥</span><span class="price">{{$store.state.sum}}</span>
+				</div>
+			</li>
+			<li class="modal-item">
+				<div class="modal-desc">
+					<i class="icon icon-selected">
+						<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
+					</i>
+					<div class="desc-text">	
+						<p class="modal modal_2">分时租赁模式</p>
+						<p>文字说明，解释规则</p>
+						<p>
+							<ul class="time-choice active">
+								<li class="time-modal"  v-for="(d,eq) in $store.state.list">
+									<span class="tnum">{{d.type}}</span>小时
+							    </li>
+								<li class="time-modal active">
+									<span class="tnum">5</span>小时
+								</li>
+								<li class="time-modal">
+									<span class="tnum">8</span>小时
+								</li>
+							</ul>
+						</p>
+					</div>					
+				</div>
+				<div class="modal-price">
+					<span class="price-flag">￥</span><span class="price"></span>
+				</div>
+			</li>
+			<li class="modal-item" v-show="$store.state.free">
+				<div class="modal-desc">
+					<i class="icon icon-selected">
+						<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
+					</i>
+					<div class="desc-text">	
+						<p class="modal modal_3">免费模式</p>
+						<p>文字说明，解释规则</p>
+					</div>					
+				</div>
+				<div class="modal-price">
+					<span class="price free">免费</span>
+				</div>
+			</li> -->

@@ -54,7 +54,8 @@ var store = new Vuex.Store({
   state: {
     sum: 0,
     free:false,
-    list:[]
+    list:[],
+    model:[]
   },
   mutations:{
     calsum (state,num) {
@@ -68,10 +69,10 @@ var store = new Vuex.Store({
     },
     calstatus(state,num) {
       state.status = num
-    }/*,
-    calimg(state,str) {
-      state.status = str
-    }*/
+    },
+     calmodel(state,arr) {
+      state.model = arr
+    }
   }
 })
 var test = new Vue({
@@ -85,14 +86,16 @@ var test = new Vue({
             return;
          }else{
             this.sn = condition[0].split("=")[1];
-            this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
+            //https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn
+            this.$http.get("/wanlida/test.json").then(function(response){
               test.data1 = response.data;
-              store.commit('calsum',response.data.sum);
+              /*store.commit('calsum',response.data.sum);
               store.commit('calfree',response.data.free);
-              store.commit('calexpense',response.data.expensesList);
-              store.commit('calstatus',response.data.status);
+              store.commit('calexpense',response.data.expensesList);*/
+              store.commit('calstatus',response.data.unifyStatus);
+              store.commit('calmodel',response.data.modeList);
 
-              switch(response.data.status){
+              /*switch(response.data.unifyStatus){
                 case -1:
                 this.$router.push({
                         name:'router1',
@@ -100,19 +103,24 @@ var test = new Vue({
                           imgSrc:"img/img_maintain@1x.png"
                         }
                 })        
-              }
+              }*/
 
-              //store.commit('calimg',this.imgSrc);
+              
             })
         }    
   },
   data:{
     data1:{
-      sn:'',
+      sn:'',//0095699FA99C
       status:''
     },
     sn:"",
     imgSrc:""
+  },
+  methods:{
+    chosexxx:function(){
+      alert('haha')
+    }
   },
   store,
   components: {
@@ -121,5 +129,3 @@ var test = new Vue({
   },
   router
 }).$mount('#app');
-
-

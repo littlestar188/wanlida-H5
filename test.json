@@ -1,0 +1,67 @@
+{
+    "address": "软件园",
+    "busy": false,
+    "city": "宁波市",
+    "companyCode": "F1",
+    "deviceType": "01",
+    "district": "鄞州区",
+    "expensesList": [
+        {
+            "amount": 3,
+            "type": "3"
+        },
+        {
+            "amount": 5,
+            "type": "5"
+        },
+        {
+            "amount": 8,
+            "type": "8"
+        },
+        {
+            "amount": 12,
+            "type": "12"
+        }
+    ],
+    "free": true,
+    "id": "5a0e72a575b74923a049d343",
+    "imei": "666666666666",
+    "modeList": [
+        {
+            "name": "全租模式",
+            "amount": 240,
+            "desc":"文字说明，解释规则"
+        },
+        {
+            "name": "租赁模式",
+            "expensesList": [
+                {
+                    "type": "3",
+                    "amount": 3
+                },
+                {
+                    "type": "5",
+                    "amount": 5
+                },
+                {
+                    "type": "8",
+                    "amount": 8
+                }
+            ],
+            "desc":"文字说明，解释规则"
+        },
+        {
+            "name": "免费模式",
+            "amount": 0,
+            "desc":"文字说明，解释规则"
+        }
+    ],
+    "online": true,
+    "pm": 10,
+    "province": "浙江省",
+    "sn": "0095699FA99C",
+    "sum": 240,
+    "timestamp": 1510896293000,
+    "totalOnlineTime": 0,
+    "unifyStatus": 0
+}
