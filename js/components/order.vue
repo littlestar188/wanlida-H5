@@ -11,6 +11,11 @@
 			<p>下单时间：2017-11-9  18:04</p>
 			
 		</div>
+		<div class="state-pay">		
+			<div id="pay"  v-bind:class="[$store.state.status==0?'active':'']" @click="renew()">
+				<a class="cart">续费</a>
+			</div>
+		</div>	
 	</div>
 	
 </template>
@@ -59,6 +64,15 @@
 </style>
 <script type="text/javascript">
 	module.exports = {
-
+		methods:{
+			renew:function(){
+				this.$router.push({
+	            	name:'router3',
+	            	params:{
+	                	
+	            	}
+	            }) ;
+            } 
+		}
 	}
 </script>

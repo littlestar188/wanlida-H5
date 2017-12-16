@@ -2,7 +2,7 @@
 	<div class="device">
 		<div class="header">
 			<div class="header-left logo left">
-				<img src="/wanlida/img/icon_logo@1x.png" alt="" srcset="/wanlida/img/icon_logo@2x.png 2x" >
+				<img src="img/icon_logo@1x.png" alt="" srcset="img/icon_logo@2x.png 2x" >
 			</div>
 			<div class="header-right left">
 				<div class="title">空气净化器KJ-581D</div>
@@ -82,32 +82,36 @@
 	.device .header{
 		height:;
 		-width:100%;
-		padding:2% 11%;
-		padding-top:4%;
+		/* padding:2% 11%;
+		padding-top:4%; */
+		padding:0.2rem 2rem;
+		padding-top:0.4rem;
 		background-color:#E60012;
 		color:#fff;
 	}
 	.device .header .header-left{
-		padding: 2% 3%;
+		/* padding: 2% 3%; */
+		padding:0.3rem;
 	}
 	.device .header .title{
 		font-size:18px;
 	}
 	.device .info{
-		padding:4% 11%;
-		padding-bottom:0;
+		/* padding:4% 11%; */
+		padding:0.3rem 1rem;
+		padding-bottom:0.2rem;
 		overflow: hidden;
 		background-color:#fff;
 		display:flex;
 	}
 	.device .info-base.left{
-		flex:9;
+		flex:8;
 	}
 	.device .info-PM.right{
 		flex:3;
 	}
 	.device .info-base .item{
-		padding-bottom:0.6rem;
+		padding-bottom:0.2rem;
 	}
 	.state-value{
         font-size: 0.625rem;    
@@ -117,7 +121,7 @@
 	}
 	.num{
 		font-size: 0.775rem;
-		padding-top: 0.4rem;
+		padding-top: 0.2rem;
 		text-align: center;
 		font-weight:bold;
 	}
@@ -136,12 +140,13 @@
 	.radius{
 		position: relative;
     	top: 0;
-		height:1.2rem;
+		height:0.8rem;
 		width:100%;  	
     	background: #fff;
 	}
 	.radius>img{
 		position: absolute;
+		width:100%;
     	top: 0;
 	}
 </style>

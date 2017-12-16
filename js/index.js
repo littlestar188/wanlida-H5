@@ -30,7 +30,9 @@ var router = new VueRouter({
     {path:'/',component:model},
     {path:'/state',component:state},
     {path:'/order',component:order},
-    {name:"router1",path:"/",component:state}
+    {name:"router1",path:"/",component:state},
+    {name:"router2",path:"/",component:order},
+    {name:"router3",path:"/order",component:model},
   ]
 })
 
@@ -95,15 +97,16 @@ var test = new Vue({
               store.commit('calstatus',response.data.unifyStatus);
               store.commit('calmodel',response.data.modeList);
 
-              /*switch(response.data.unifyStatus){
+              switch(response.data.unifyStatus){
                 case -1:
                 this.$router.push({
                         name:'router1',
                         params:{
-                          imgSrc:"img/img_maintain@1x.png"
+                          sn:this.sn,
+                          status:response.data.unifyStatus
                         }
                 })        
-              }*/
+              }
 
               
             })
@@ -124,8 +127,8 @@ var test = new Vue({
   },
   store,
   components: {
-      'my-header':header,
-      'my-footer': footer
+      'my-header':header/*,
+      'my-footer': footer*/
   },
   router
 }).$mount('#app');

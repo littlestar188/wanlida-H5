@@ -4,24 +4,18 @@
 		<ul class="modal-choice">
 			<li class="modal-item" v-for="(o,eq) in $store.state.model" v-bind:class="[(linum==eq)?'active':'']">
 				<div class="modal-desc" >
-					<i class="icon icon-selected" @click="chose(o,eq)">
-						<img src="/wanlida/img/pattern_btn_n@1x.png" alt="" srcset="/wanlida/img/pattern_btn_n@2x.png 2x">
+					<i class="icon" @click="chose(o,eq)" v-bind:class="[(linum==eq)?'icon-selected':'icon-unselected']">
+						<!-- <img :src="selectedIcon_1" alt="" :srcset="selectedIcon_2"> -->
 					</i>
 					<div class="desc-text">	
-						<p class="modal" v-bind:class="">{{o.name}}</p>
+						<p class="modal" v-bind:class="'modal_'+eq">{{o.name}}</p>
 						<p>{{o.desc}}</p>
 						<p v-show="o.expensesList && o.expensesList.length>0">
-							<ul class="time-choice" v-bind:class="[(linum==2)?'active':'']">
-								<li class="time-modal"  v-for="(d,eq,index) in o.expensesList" @click="expenseChose(d,index)" v-bind:class="[(expenseNum==index)?'active':'']">
+							<ul class="time-choice" v-bind:class="[(linum==1)?'active':'']">
+								<li class="time-modal"  v-for="(d,index) in o.expensesList" @click="expenseChose(d,eq,index)" v-bind:class="[(expenseNum==index)?'active':'']">
 									<span class="tnum">{{d.type}}</span>小时
-									<span class="amount"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
-							    </li>
-								<!-- <li class="time-modal active">
-									<span class="tnum">5</span>小时
-								</li>
-								<li class="time-modal">
-									<span class="tnum">8</span>小时
-								</li> -->
+									<span class="amount" v-show="(eq==1&&expenseNum==index)"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
+							    </li>								
 							</ul>
 						</p>
 					</div>					
@@ -32,7 +26,12 @@
 			</li>
 			
 		</ul>
-		<p>选择：无模式</p>		
+		<p>选择：{{modalSelected}}</p>
+		<div class="state-pay">		
+			<div id="pay"  v-bind:class="[$store.state.status==0?'active':'']" @click="createOrder()">
+				<a class="cart">立即支付</a>
+			</div>
+		</div>			
 	</div>
 </template>
 <script type="text/javascript">
@@ -40,21 +39,31 @@
 		data:function(){
 			return {
 				modalActive:false,
-				modalColor:"",
+				modalSelected:"全租模式",
 				linum:0,
 				expenseNum:0,
-				selectedIcon:""
+				selectedIcon_1:"img/pattern_btn_n@1x.png",
+				selectedIcon_2:"img/pattern_btn_n@2x.png 2x",
 			}
 		},
 		methods:{
 			chose:function(value,eq){
 				this.linum = eq;
-				if(qe == 1){
-					this.expenseChose()
-				}
+				this.selectedIcon_1 = "img/pattern_btn_s@1x.png";
+				this.selectedIcon_2 = "img/pattern_btn_s@2x.png 2x";
+				this.modalSelected = value.name;
+				
 			},
-			expenseChose:function(value,index){
+			expenseChose:function(value,eq,index){
+				console.log(eq,index)
+				if(eq !== 1) return;
 				this.expenseNum = index;
+			},
+			createOrder:function(){
+				this.$router.push({
+	                    	name:'router2',
+	                    	params:{}
+	                    }) ; 
 			}
 		}
 	}
@@ -62,7 +71,8 @@
 <style>
 	.modal-choice{
 		overflow: hidden;
-		padding: 0.3rem  0;
+		/* padding: 0.3rem  0; */
+		padding-top:0.3rem;
 	}
 	.modal-choice .modal-item{
 		display:flex;
@@ -72,7 +82,7 @@
 /* 		height:2rem;
 line-height:2rem; */
 		padding:0.5rem 0.6rem;
-		background-color:rgba(255,255,255,0.6);
+		background-color:rgba(255,255,255,0.4);
 
         
 	}
@@ -90,17 +100,53 @@ line-height:2rem; */
 		padding-left:0.5rem;
 	}
 	.modal-choice .modal-item .modal-desc .icon{
+		height:20px;
+		width:20px;
+	}
+	.modal-choice .modal-item .modal-desc .icon.icon-unselected{
+		background:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;
+		background-size: 100%;
+	}
+	.modal-choice .modal-item .modal-desc .icon.icon-selected{
+		background:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;
+		background-size: 100%;
+	}
+	@media only screen and (-webkit-min-device-pixel-ratio:2),
+	only screen and (min--moz-device-pixel-ratio:2),
+	only screen and (-o-min-device-pixel-ratio:2/1),
+	only screen and (min-device-pixel-ratio:2){
+		.modal-choice .modal-item .modal-desc .icon.icon-unselected{
+			background:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;
+			background-size: 100%;
+		}
+		.modal-choice .modal-item .modal-desc .icon.icon-selected{
+			background:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;
+			background-size: 100%;
+		}
+	}
+	@media only screen and (-webkit-min-device-pixel-ratio:3),
+	only screen and (min--moz-device-pixel-ratio:3),
+	only screen and (-o-min-device-pixel-ratio:3/1),
+	only screen and (min-device-pixel-ratio:3){
+		.modal-choice .modal-item .modal-desc .icon.icon-unselected{
+			background:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;
+			background-size: 100%;
+		}
+		.modal-choice .modal-item .modal-desc .icon.icon-selected{
+			background:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;
+			background-size: 100%;
+		}
 	}
 	.modal-choice .modal-item .modal-desc .modal{
 		font-size:0.685rem;
 	}
-	.modal-choice .modal-item .modal-desc .modal.modal_1{
+	.modal-choice .modal-item .modal-desc .modal.modal_0{
 		color:#FF4C50;
 	}
-	.modal-choice .modal-item .modal-desc .modal.modal_2{
+	.modal-choice .modal-item .modal-desc .modal.modal_1{
 		color:#F5A623;
 	}
-	.modal-choice .modal-item .modal-desc .modal.modal_3{
+	.modal-choice .modal-item .modal-desc .modal.modal_2{
 		color:#7ED321;
 	}
 	.modal-price{
@@ -167,6 +213,9 @@ line-height:2rem; */
 	    top: 50%;
 	    margin-top: -0.5rem;
 	    left:84%;
+	}
+	#pay.active{
+		background-color: #E60012 !important;
 	}
 </style>
 

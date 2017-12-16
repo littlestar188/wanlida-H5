@@ -89,9 +89,9 @@ body{
     height: 1.8rem;
     line-height: 1.8rem;
     text-align: center;
-    background-color: #E60012;
     z-index: 10;
     border-radius: 4px;
+    background-color:#ccc;
 }
 #buy a ,#pay a{
     font-size:0.685rem;

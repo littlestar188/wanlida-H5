@@ -9232,7 +9232,9 @@ var router = new VueRouter({
     {path:'/',component:model},
     {path:'/state',component:state},
     {path:'/order',component:order},
-    {name:"router1",path:"/",component:state}
+    {name:"router1",path:"/",component:state},
+    {name:"router2",path:"/",component:order},
+    {name:"router3",path:"/order",component:model},
   ]
 })
 
@@ -9297,15 +9299,16 @@ var test = new Vue({
               store.commit('calstatus',response.data.unifyStatus);
               store.commit('calmodel',response.data.modeList);
 
-              /*switch(response.data.unifyStatus){
+              switch(response.data.unifyStatus){
                 case -1:
                 this.$router.push({
                         name:'router1',
                         params:{
-                          imgSrc:"img/img_maintain@1x.png"
+                          sn:this.sn,
+                          status:response.data.unifyStatus
                         }
                 })        
-              }*/
+              }
 
               
             })
@@ -9326,8 +9329,8 @@ var test = new Vue({
   },
   store,
   components: {
-      'my-header':header,
-      'my-footer': footer
+      'my-header':header/*,
+      'my-footer': footer*/
   },
   router
 }).$mount('#app');
@@ -25678,7 +25681,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\tpadding:2% 11%;\n\t\tpadding-top:4%;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\tpadding: 2% 3%;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\tpadding:4% 11%;\n\t\tpadding-bottom:0;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n\t\tdisplay:flex;\n}\n.device .info-base.left{\n\t\tflex:9;\n}\n.device .info-PM.right{\n\t\tflex:3;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.6rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.4rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:1.2rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n    \ttop: 0;\n}\n", ""]);
+exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\t/* padding:2% 11%;\n\t\tpadding-top:4%; */\n\t\tpadding:0.2rem 2rem;\n\t\tpadding-top:0.4rem;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\t/* padding: 2% 3%; */\n\t\tpadding:0.3rem;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\t/* padding:4% 11%; */\n\t\tpadding:0.3rem 1rem;\n\t\tpadding-bottom:0.2rem;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n\t\tdisplay:flex;\n}\n.device .info-base.left{\n\t\tflex:8;\n}\n.device .info-PM.right{\n\t\tflex:3;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.2rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.2rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:0.8rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n\t\twidth:100%;\n    \ttop: 0;\n}\n", ""]);
 
 // exports
 
@@ -25833,9 +25836,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "header-left logo left"
   }, [_c('img', {
     attrs: {
-      "src": "/wanlida/img/icon_logo@1x.png",
+      "src": "img/icon_logo@1x.png",
       "alt": "",
-      "srcset": "/wanlida/img/icon_logo@2x.png 2x"
+      "srcset": "img/icon_logo@2x.png 2x"
     }
   })])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -26009,7 +26012,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\tpadding: 0.3rem  0;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.6);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_3{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n", ""]);
+exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding: 0.3rem  0; */\n\t\tpadding-top:0.3rem;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.4);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n\t\theight:20px;\n\t\twidth:20px;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\tbackground:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\tbackground:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_0{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n#pay.active{\n\t\tbackground-color: #E60012 !important;\n}\n", ""]);
 
 // exports
 
@@ -26054,27 +26057,36 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\tpadding: 0
 //
 //
 //
-//
 
 module.exports = {
 	data:function(){
 		return {
 			modalActive:false,
-			modalColor:"",
+			modalSelected:"全租模式",
 			linum:0,
 			expenseNum:0,
-			selectedIcon:""
+			selectedIcon_1:"img/pattern_btn_n@1x.png",
+			selectedIcon_2:"img/pattern_btn_n@2x.png 2x",
 		}
 	},
 	methods:{
 		chose:function(value,eq){
 			this.linum = eq;
-			if(qe == 1){
-				this.expenseChose()
-			}
+			this.selectedIcon_1 = "img/pattern_btn_s@1x.png";
+			this.selectedIcon_2 = "img/pattern_btn_s@2x.png 2x";
+			this.modalSelected = value.name;
+			
 		},
-		expenseChose:function(value,index){
+		expenseChose:function(value,eq,index){
+			console.log(eq,index)
+			if(eq !== 1) return;
 			this.expenseNum = index;
+		},
+		createOrder:function(){
+			this.$router.push({
+                    	name:'router2',
+                    	params:{}
+                    }) ; 
 		}
 	}
 }
@@ -26096,22 +26108,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('div', {
       staticClass: "modal-desc"
     }, [_c('i', {
-      staticClass: "icon icon-selected",
+      staticClass: "icon",
+      class: [(_vm.linum == eq) ? 'icon-selected' : 'icon-unselected'],
       on: {
         "click": function($event) {
           _vm.chose(o, eq)
         }
       }
-    }, [_c('img', {
-      attrs: {
-        "src": "/wanlida/img/pattern_btn_n@1x.png",
-        "alt": "",
-        "srcset": "/wanlida/img/pattern_btn_n@2x.png 2x"
-      }
-    })]), _vm._v(" "), _c('div', {
+    }), _vm._v(" "), _c('div', {
       staticClass: "desc-text"
     }, [_c('p', {
-      staticClass: "modal"
+      staticClass: "modal",
+      class: 'modal_' + eq
     }, [_vm._v(_vm._s(o.name))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(o.desc))]), _vm._v(" "), _c('p', {
       directives: [{
         name: "show",
@@ -26121,19 +26129,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }]
     }, [_c('ul', {
       staticClass: "time-choice",
-      class: [(_vm.linum == 2) ? 'active' : '']
-    }, _vm._l((o.expensesList), function(d, eq, index) {
+      class: [(_vm.linum == 1) ? 'active' : '']
+    }, _vm._l((o.expensesList), function(d, index) {
       return _c('li', {
         staticClass: "time-modal",
         class: [(_vm.expenseNum == index) ? 'active' : ''],
         on: {
           "click": function($event) {
-            _vm.expenseChose(d, index)
+            _vm.expenseChose(d, eq, index)
           }
         }
       }, [_c('span', {
         staticClass: "tnum"
       }, [_vm._v(_vm._s(d.type))]), _vm._v("小时\n\t\t\t\t\t\t\t\t"), _c('span', {
+        directives: [{
+          name: "show",
+          rawName: "v-show",
+          value: ((eq == 1 && _vm.expenseNum == index)),
+          expression: "(eq==1&&expenseNum==index)"
+        }],
         staticClass: "amount"
       }, [_c('span', {
         staticClass: "price-flag"
@@ -26153,7 +26167,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_vm._v("￥")]), _c('span', {
       staticClass: "price"
     }, [_vm._v(_vm._s(o.amount))])])])
-  })), _vm._v(" "), _c('p', [_vm._v("选择：无模式")])])
+  })), _vm._v(" "), _c('p', [_vm._v("选择：" + _vm._s(_vm.modalSelected))]), _vm._v(" "), _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
+    class: [_vm.$store.state.status == 0 ? 'active' : ''],
+    attrs: {
+      "id": "pay"
+    },
+    on: {
+      "click": function($event) {
+        _vm.createOrder()
+      }
+    }
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("立即支付")])])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -26304,10 +26332,24 @@ exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-c
 //
 //
 //
+//
+//
+//
+//
+//
 
-module.exports = {
-
-}
+	module.exports = {
+		methods:{
+			renew:function(){
+				this.$router.push({
+	            	name:'router3',
+	            	params:{
+	                	
+	            	}
+	            }) ;
+            } 
+		}
+	}
 
 
 /***/ }),
@@ -26315,19 +26357,35 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "order-content"
+  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('div', {
+    staticClass: "state-pay"
   }, [_c('div', {
+    class: [_vm.$store.state.status == 0 ? 'active' : ''],
+    attrs: {
+      "id": "pay"
+    },
+    on: {
+      "click": function($event) {
+        _vm.renew()
+      }
+    }
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("续费")])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
     staticClass: "timing"
   }, [_c('div', {
     staticClass: "clock danger"
-  }, [_vm._v("04:56:32")]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])]), _vm._v(" "), _c('div', {
+  }, [_vm._v("04:56:32")]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
     staticClass: "order-info"
   }, [_c('span', {
     staticClass: "red-line"
-  }), _vm._v(" "), _c('p', [_vm._v("订单号：1003749939411840")]), _vm._v(" "), _c('p', [_vm._v("下单时间：2017-11-9  18:04")])])])
+  }), _vm._v(" "), _c('p', [_vm._v("订单号：1003749939411840")]), _vm._v(" "), _c('p', [_vm._v("下单时间：2017-11-9  18:04")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -26410,7 +26468,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tbackground-color: #fff;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/wanlida/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/wanlida/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/wanlida/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
 
 // exports
 
@@ -26440,19 +26498,64 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 module.exports = {
 	data:function(){
 		return {
-			imageSrc:"",
+			imageStatus:"",
+			status:0,
 			url:""
+		}
+	},
+	computed:{
+		imageClass:function(){
+			switch(this.$route.params.status){
+				case -2:
+					this.imageStatus = "used";
+					break;
+				case -1:
+					this.imageStatus = "repair";
+					break;
+				case 0	:
+					break;
+				default:
+					this.imageStatus = "error";
+					break;		
+
+			}
+			return this.imageStatus
 		}
 	},
 	methods:{
 		ready:function(){
-			this.imageSrc = this.$route.params.imageSrc;
+			this.sn = this.$route.params.sn;
 			this.url = "#/?sn="+this.sn;
-			console.log(this.sn,this.imageSrc)
+			this.status = this.$route.params.status;
+			console.log(this.sn,this.status)
 		}
 	},
 	created:function(){
@@ -26468,14 +26571,21 @@ module.exports = {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', [_c('div', {
     staticClass: "state-content"
-  }, [_c('img', {
+  }, [_c('div', {
+    staticClass: "imgwrapper",
+    class: _vm.imageClass
+  }), _vm._v(" "), _c('p', [_vm._v("设备已经被使用")])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _vm._m(0)])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
     attrs: {
-      "src": _vm.imageSrc,
-      "alt": "",
-      "srcset": "/wanlida/img/img_use@2x.png 2x"
+      "id": "pay"
     }
-  }), _vm._v(" "), _c('p', [_vm._v("设备已经被使用")])])])
-},staticRenderFns: []}
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("立即支付")])])])
+}]}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
