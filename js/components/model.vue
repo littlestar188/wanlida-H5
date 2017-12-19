@@ -2,7 +2,7 @@
 	<div class="content">
 		<p>请选择一款模式</p>
 		<ul class="modal-choice">
-			<li class="modal-item" v-for="(o,eq) in $store.state.model" v-bind:class="[(linum==eq)?'active':'']">
+			<li class="modal-item" v-for="(o,eq) in $store.state.model" v-bind:class="[(linum==eq)?'active':'']" @click="modalchose(o,eq)" >
 				<div class="modal-desc" >
 					<i class="icon" @click="chose(o,eq)" v-bind:class="[(linum==eq)?'icon-selected':'icon-unselected']">
 						<!-- <img :src="selectedIcon_1" alt="" :srcset="selectedIcon_2"> -->
@@ -10,14 +10,14 @@
 					<div class="desc-text">	
 						<p class="modal" v-bind:class="'modal_'+eq">{{o.name}}</p>
 						<p>{{o.desc}}</p>
-						<p v-show="o.expensesList && o.expensesList.length>0">
+						<div v-show="o.expensesList && o.expensesList.length>0">
 							<ul class="time-choice" v-bind:class="[(linum==1)?'active':'']">
-								<li class="time-modal"  v-for="(d,index) in o.expensesList" @click="expenseChose(d,eq,index)" v-bind:class="[(expenseNum==index)?'active':'']">
-									<span class="tnum">{{d.type}}</span>小时
-									<span class="amount" v-show="(eq==1&&expenseNum==index)"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
+								<li class="time-modal"  v-for="(d,index) in o.expensesList"  @click="expenseChose(d,eq,index)" v-bind:class="[(expenseNum==index)?'active':'']">
+									<span class="tnum">{{d.type}}</span>小时								
+									<span class="amount" v-if="" v-show="(expenseNum==index)"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
 							    </li>								
 							</ul>
-						</p>
+						</div>
 					</div>					
 				</div>
 				<div class="modal-price">
@@ -38,19 +38,21 @@
 	module.exports = {
 		data:function(){
 			return {
+				sn:"",
+				deviceUId:"",
 				modalActive:false,
 				modalSelected:"全租模式",
 				linum:0,
 				expenseNum:0,
-				selectedIcon_1:"img/pattern_btn_n@1x.png",
-				selectedIcon_2:"img/pattern_btn_n@2x.png 2x",
+				flagclick:false,
+				type:"sum",
+				orderNo:"",
+				increase:false
 			}
 		},
 		methods:{
 			chose:function(value,eq){
 				this.linum = eq;
-				this.selectedIcon_1 = "img/pattern_btn_s@1x.png";
-				this.selectedIcon_2 = "img/pattern_btn_s@2x.png 2x";
 				this.modalSelected = value.name;
 				
 			},
@@ -58,14 +60,77 @@
 				console.log(eq,index)
 				if(eq !== 1) return;
 				this.expenseNum = index;
+				this.type = value.type;
+				
+				
+				console.log("expensechose--------",this.flagclick)
+			},
+			modalchose:function(value,eq){
+				
+				if(eq == 1){
+					this.flagclick = true;
+					return
+				}else{
+					this.flagclick = false;
+					this.type ="sum";
+				}
+				console.log("modalchose--------",value,this.type)
+			},
+			createUid:function(){
+				this.$http.get("https://wanlida-test.yunext.com/external/getUUID")
+                    .then(function(response){
+                     this.deviceUId = response.data;
+                     console.log(this.deviceUId)
+                     /*this.setStorage("generateCode",response.data.data);
+                     this.judgeStorage("generateCode"); */                    
+                });
 			},
 			createOrder:function(){
-				this.$router.push({
+
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+				this.sn = condition[0].split("=")[1];
+
+				console.log(this.sn)
+				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
+				 params:{
+						"sn":/*'0095699FA99C'*/this.sn,
+						"uuid":this.deviceUId,
+						"type":this.type,
+						"increase":this.increase}
+					}).then(function(response){
+						
+						if(response.data.status ==10000){
+							
+							this.orderNo = response.data
+							this.pay(this.orderNo)
+								
+						}else{
+							alert(response.data.msg);
+						}
+						console.log(this.orderNo)					
+					})	
+			},
+			pay:function(orderNo){
+				this.$http.post("https://wanlida-test.yunext.com/external/payOrder/wxPay",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'}, params:{
+						"orderNo":this.orderNo,
+						"body":"租赁万利达空净"}
+					}).then(function(response){
+						window.location = response.data;
+						/*this.$router.push({
 	                    	name:'router2',
 	                    	params:{}
-	                    }) ; 
+			            }) ;*/ 
+				})
 			}
+
+		},
+		created:function(){
+			this.createUid();
+			
+
 		}
+
 	}
 </script>
 <style>
@@ -177,7 +242,7 @@ line-height:2rem; */
 		float:left;
 		font-size: 0.465rem;
 		border: 1px solid;
-        padding: 0 0.4rem;
+        padding: 0.2rem 0.4rem;
         border-radius: 0.7rem;
         margin-right:0.5rem;
 	}

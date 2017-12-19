@@ -88,26 +88,32 @@ var test = new Vue({
             return;
          }else{
             this.sn = condition[0].split("=")[1];
-            //https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn
-            this.$http.get("/wanlida/test.json").then(function(response){
-              test.data1 = response.data;
-              /*store.commit('calsum',response.data.sum);
-              store.commit('calfree',response.data.free);
-              store.commit('calexpense',response.data.expensesList);*/
-              store.commit('calstatus',response.data.unifyStatus);
-              store.commit('calmodel',response.data.modeList);
+           
+            //wanlida/test.json
+            this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
+              if(response.data.status==10000){
+                test.data1 = response.data.data;
+                /*store.commit('calsum',response.data.sum);
+                store.commit('calfree',response.data.free);
+                store.commit('calexpense',response.data.expensesList);*/
+                store.commit('calstatus',response.data.data.unifyStatus);
+                store.commit('calmodel',response.data.data.modeList);
 
-              switch(response.data.unifyStatus){
-                case -1:
-                this.$router.push({
+                switch(response.data.data.unifyStatus){
+                  case -1:
+                    this.$router.push({
                         name:'router1',
                         params:{
                           sn:this.sn,
-                          status:response.data.unifyStatus
+                          status:response.data.data.unifyStatus
                         }
-                })        
-              }
+                    })        
+                }
 
+              }else{
+                alert("请求失败");
+              }
+              
               
             })
         }    

@@ -64,6 +64,13 @@
 </style>
 <script type="text/javascript">
 	module.exports = {
+		data:function(){
+			return {
+				timestamp:"",
+				timeInterval:"",//倒计时结束时间与当前时间的之间的间隔
+				timeIntervalVal: '', // 保存时间间隔的参数
+			}
+		},
 		methods:{
 			renew:function(){
 				this.$router.push({
@@ -72,7 +79,49 @@
 	                	
 	            	}
 	            }) ;
-            } 
+            },
+			orderstate_ask:function(){
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?orderNo="+this.orderNo).then(function(response){
+					console.log(response.data)
+				})
+			},
+			countDown:function(timestamp){
+				var self = this;
+				var timer = setInterval(function(){
+		        var nowTime = new Date();
+		        var endTime = new Date(timestamp * 1000);
+		        var t = endTime.getTime() - nowTime.getTime();
+		        if(t>0){
+		         // var day = Math.floor(t/86400000);
+		          var hour=Math.floor((t/3600000)%24);
+		          var min=Math.floor((t/60000)%60);
+		          var sec=Math.floor((t/1000)%60);
+		          hour = hour < 10 ? "0" + hour : hour;
+		          min = min < 10 ? "0" + min : min;
+		          sec = sec < 10 ? "0" + sec : sec;
+		          var format = '';
+		          /*if(day > 0){
+		            format = `${day}天${hour}小时${min}分${sec}秒`;
+		          } */
+		          if(day <= 0 && hour > 0 ){
+		            format = `${hour}小时${min}分${sec}秒`; 
+		          }
+		          if(day <= 0 && hour <= 0){
+		            format =`${min}分${sec}秒`;
+		          }
+		          self.content = format;
+		          }else{
+		           clearInterval(timer);
+		           self.content = self.endText;
+		           self._callback();
+		          }
+		         },1000);
+		        }
+		        
+			} 
+		},
+		created:function(){
+
 		}
 	}
 </script>

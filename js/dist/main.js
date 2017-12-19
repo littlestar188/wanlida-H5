@@ -9290,26 +9290,32 @@ var test = new Vue({
             return;
          }else{
             this.sn = condition[0].split("=")[1];
-            //https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn
-            this.$http.get("/wanlida/test.json").then(function(response){
-              test.data1 = response.data;
-              /*store.commit('calsum',response.data.sum);
-              store.commit('calfree',response.data.free);
-              store.commit('calexpense',response.data.expensesList);*/
-              store.commit('calstatus',response.data.unifyStatus);
-              store.commit('calmodel',response.data.modeList);
+           
+            //wanlida/test.json
+            this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
+              if(response.data.status==10000){
+                test.data1 = response.data.data;
+                /*store.commit('calsum',response.data.sum);
+                store.commit('calfree',response.data.free);
+                store.commit('calexpense',response.data.expensesList);*/
+                store.commit('calstatus',response.data.data.unifyStatus);
+                store.commit('calmodel',response.data.data.modeList);
 
-              switch(response.data.unifyStatus){
-                case -1:
-                this.$router.push({
+                switch(response.data.data.unifyStatus){
+                  case -1:
+                    this.$router.push({
                         name:'router1',
                         params:{
                           sn:this.sn,
-                          status:response.data.unifyStatus
+                          status:response.data.data.unifyStatus
                         }
-                })        
-              }
+                    })        
+                }
 
+              }else{
+                alert("请求失败");
+              }
+              
               
             })
         }    
@@ -26012,7 +26018,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding: 0.3rem  0; */\n\t\tpadding-top:0.3rem;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.4);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n\t\theight:20px;\n\t\twidth:20px;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\tbackground:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\tbackground:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_0{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n#pay.active{\n\t\tbackground-color: #E60012 !important;\n}\n", ""]);
+exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding: 0.3rem  0; */\n\t\tpadding-top:0.3rem;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.4);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n\t\theight:20px;\n\t\twidth:20px;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\tbackground:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\tbackground:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_0{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0.2rem 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n#pay.active{\n\t\tbackground-color: #E60012 !important;\n}\n", ""]);
 
 // exports
 
@@ -26058,38 +26064,103 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 //
 //
 
-module.exports = {
-	data:function(){
-		return {
-			modalActive:false,
-			modalSelected:"全租模式",
-			linum:0,
-			expenseNum:0,
-			selectedIcon_1:"img/pattern_btn_n@1x.png",
-			selectedIcon_2:"img/pattern_btn_n@2x.png 2x",
-		}
-	},
-	methods:{
-		chose:function(value,eq){
-			this.linum = eq;
-			this.selectedIcon_1 = "img/pattern_btn_s@1x.png";
-			this.selectedIcon_2 = "img/pattern_btn_s@2x.png 2x";
-			this.modalSelected = value.name;
+	module.exports = {
+		data:function(){
+			return {
+				sn:"",
+				deviceUId:"",
+				modalActive:false,
+				modalSelected:"全租模式",
+				linum:0,
+				expenseNum:0,
+				flagclick:false,
+				type:"sum",
+				orderNo:"",
+				increase:false
+			}
+		},
+		methods:{
+			chose:function(value,eq){
+				this.linum = eq;
+				this.modalSelected = value.name;
+				
+			},
+			expenseChose:function(value,eq,index){
+				console.log(eq,index)
+				if(eq !== 1) return;
+				this.expenseNum = index;
+				this.type = value.type;
+				
+				
+				console.log("expensechose--------",this.flagclick)
+			},
+			modalchose:function(value,eq){
+				
+				if(eq == 1){
+					this.flagclick = true;
+					return
+				}else{
+					this.flagclick = false;
+					this.type ="sum";
+				}
+				console.log("modalchose--------",value,this.type)
+			},
+			createUid:function(){
+				this.$http.get("https://wanlida-test.yunext.com/external/getUUID")
+                    .then(function(response){
+                     this.deviceUId = response.data;
+                     console.log(this.deviceUId)
+                     /*this.setStorage("generateCode",response.data.data);
+                     this.judgeStorage("generateCode"); */                    
+                });
+			},
+			createOrder:function(){
+
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+				this.sn = condition[0].split("=")[1];
+
+				console.log(this.sn)
+				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
+				 params:{
+						"sn":/*'0095699FA99C'*/this.sn,
+						"uuid":this.deviceUId,
+						"type":this.type,
+						"increase":this.increase}
+					}).then(function(response){
+						
+						if(response.data.status ==10000){
+							
+							this.orderNo = response.data
+							this.pay(this.orderNo)
+								
+						}else{
+							alert(response.data.msg);
+						}
+						console.log(this.orderNo)					
+					})	
+			},
+			pay:function(orderNo){
+				this.$http.post("https://wanlida-test.yunext.com/external/payOrder/wxPay",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'}, params:{
+						"orderNo":this.orderNo,
+						"body":"租赁万利达空净"}
+					}).then(function(response){
+						window.location = response.data;
+						/*this.$router.push({
+	                    	name:'router2',
+	                    	params:{}
+			            }) ;*/ 
+				})
+			}
+
+		},
+		created:function(){
+			this.createUid();
 			
-		},
-		expenseChose:function(value,eq,index){
-			console.log(eq,index)
-			if(eq !== 1) return;
-			this.expenseNum = index;
-		},
-		createOrder:function(){
-			this.$router.push({
-                    	name:'router2',
-                    	params:{}
-                    }) ; 
+
 		}
+
 	}
-}
 
 
 /***/ }),
@@ -26104,7 +26175,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, _vm._l((_vm.$store.state.model), function(o, eq) {
     return _c('li', {
       staticClass: "modal-item",
-      class: [(_vm.linum == eq) ? 'active' : '']
+      class: [(_vm.linum == eq) ? 'active' : ''],
+      on: {
+        "click": function($event) {
+          _vm.modalchose(o, eq)
+        }
+      }
     }, [_c('div', {
       staticClass: "modal-desc"
     }, [_c('i', {
@@ -26120,7 +26196,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('p', {
       staticClass: "modal",
       class: 'modal_' + eq
-    }, [_vm._v(_vm._s(o.name))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(o.desc))]), _vm._v(" "), _c('p', {
+    }, [_vm._v(_vm._s(o.name))]), _vm._v(" "), _c('p', [_vm._v(_vm._s(o.desc))]), _vm._v(" "), _c('div', {
       directives: [{
         name: "show",
         rawName: "v-show",
@@ -26141,12 +26217,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }, [_c('span', {
         staticClass: "tnum"
-      }, [_vm._v(_vm._s(d.type))]), _vm._v("小时\n\t\t\t\t\t\t\t\t"), _c('span', {
+      }, [_vm._v(_vm._s(d.type))]), _vm._v("小时\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t"), _c('span', {
         directives: [{
           name: "show",
           rawName: "v-show",
-          value: ((eq == 1 && _vm.expenseNum == index)),
-          expression: "(eq==1&&expenseNum==index)"
+          value: ((_vm.expenseNum == index)),
+          expression: "(expenseNum==index)"
         }],
         staticClass: "amount"
       }, [_c('span', {
@@ -26273,84 +26349,7 @@ exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-c
 /* 33 */
 /***/ (function(module, exports) {
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-	module.exports = {
-		methods:{
-			renew:function(){
-				this.$router.push({
-	            	name:'router3',
-	            	params:{
-	                	
-	            	}
-	            }) ;
-            } 
-		}
-	}
-
+throw new Error("Module parse failed: Unexpected token (123:9)\nYou may need an appropriate loader to handle this file type.\n| \t\t\t} \n| \t\t},\n| \t\tcreated:function(){\n| \n| \t\t}");
 
 /***/ }),
 /* 34 */
