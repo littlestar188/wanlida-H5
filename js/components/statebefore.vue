@@ -1,0 +1,203 @@
+<template>
+	<div>
+		<div class="state-content">					
+			<p>{{statetext}}</p>
+		</div>		
+		<div class="state-pay">		
+			<div id="pay">
+				<a class="cart"v-bind:class="[state==(10||-10||-20)?'active':'']" @click="renew(state)">{{buttonText}}</a>
+			</div>
+		</div>
+	</div>
+</template>
+<style>
+	.state-content{
+		text-align: center;
+    	padding: 1.2rem;
+    	margin-bottom:0.2rem;
+    	background-color: #fff;
+		
+	}
+	.state-content .imgwrapper{
+		height:198px;
+		width:198px;
+		display:inline-block;
+	}
+	.state-content .imgwrapper.used{
+		background:url('/weixin/img/img_use@1x.png') no-repeat center;
+		background-size: 100%;
+	}
+	.state-content .imgwrapper.error{
+		background:url('/weixin/img/img_trouble@1x.png') no-repeat center;
+		background-size: 100%;
+	}
+	.state-content .imgwrapper.repair{
+		background:url('/weixin/img/img_maintain@1x.png') no-repeat center;
+		background-size: 100%;
+	}
+	.state-content p{
+		padding:0.5rem 0;
+		color:#9B9B9B;
+	}
+</style>
+<script type="text/javascript">
+	module.exports = {
+		data:function(){
+			return {
+				
+				statetext:"",
+				buttonText:"",
+				state:"",
+				leftTime:""
+			}
+		},
+		/*computed:{
+			imageClass:function(){
+				switch(this.$route.params.status){
+					case -2:
+						this.imageStatus = "used";
+						break;
+					case -1:
+						this.imageStatus = "repair";
+						break;
+					case 0	:
+						break;
+					default:
+						this.imageStatus = "error";
+						break;		
+
+				}
+				return this.imageStatus
+			}
+		},*/
+		methods:{           
+			orderstate_ask:function(){
+				var that = this;
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.openId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.stateJudge(response.data.data.orderStatus);
+					that.state = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					console.log(response.data.data.orderStatus)
+				})
+			},
+			stateJudge:function(value){
+				switch(value){
+                   case 0:
+	                   this.statetext ="等待支付结果...";
+	                   break;
+                   case 10:
+                  	     this.statetext ="支付成功,向设备发送命令中...";	              	    
+	                	break;
+	                case -10:
+	                    this.statetext ="支付失败";
+	                    this.buttonText = "重新支付";
+	                   break;
+	                case -20:
+	                    this.statetext ="设备解锁失败";
+	                    this.buttonText="申请退款";                    
+	                   break; 
+	                case 20:
+	                    this.statetext ="设备解锁成功";
+	                    this.buttonText="确定";	                    
+	                   break;      
+
+                }
+
+			},
+			renew:function(value){
+				if(value==20){
+					this.$router.push({
+	                   	name:'router4',
+	                    query:{
+	                      sn:this.sn,
+	                      openId:this.openId,
+	                      leftTime:this.leftTime
+	                    }
+            		});
+				}
+				
+			},
+			handleHref:function(){
+			
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		        var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+
+			}
+		},	
+		created:function(){
+			//this.sn=$this.$route.params.sn;
+			
+			var arr = this.handleHref();
+			this.sn = arr[0];
+			this.openId = this.decode(decodeURIComponent(arr[1]));
+			this.orderstate_ask();
+			setInterval(this.orderstate_ask,5000)
+			//this.orderstate_ask(this.sn,this.openId);
+
+
+		}
+	}
+</script>

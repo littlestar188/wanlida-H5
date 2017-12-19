@@ -12,9 +12,10 @@
 						<p>{{o.desc}}</p>
 						<div v-show="o.expensesList && o.expensesList.length>0">
 							<ul class="time-choice" v-bind:class="[(linum==1)?'active':'']">
-								<li class="time-modal"  v-for="(d,index) in o.expensesList"  @click="expenseChose(d,eq,index)" v-bind:class="[(expenseNum==index)?'active':'']">
-									<span class="tnum">{{d.type}}</span>小时								
-									<span class="amount" v-if="" v-show="(expenseNum==index)"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
+								<li class="time-modal"  v-for="(d,index) in o.expensesList"  @click="expenseChose(d,eq,index)" v-bind:class="[(expenseNum==index && linum==1)?'active':'']">
+									<span class="tnum">{{d.type}}</span>小时
+									<span class="amount" v-show="linum!==1"><span class="price-flag">￥</span><span class="price">3</span></span>								
+									<span class="amount" v-show="(expenseNum==index&& linum==1)"><span class="price-flag">￥</span><span class="price">{{d.amount}}</span></span>
 							    </li>								
 							</ul>
 						</div>
@@ -26,12 +27,13 @@
 			</li>
 			
 		</ul>
-		<p>选择：{{modalSelected}}</p>
+		<p>选择：{{modalSelected}}<span v-show="linum==1">{{expenseType}}小时</span></p>
 		<div class="state-pay">		
 			<div id="pay"  v-bind:class="[$store.state.status==0?'active':'']" @click="createOrder()">
 				<a class="cart">立即支付</a>
 			</div>
-		</div>			
+		</div>
+		<!-- <div>{{openId}}</div> -->			
 	</div>
 </template>
 <script type="text/javascript">
@@ -39,15 +41,22 @@
 		data:function(){
 			return {
 				sn:"",
+				openId:"",
 				deviceUId:"",
 				modalActive:false,
 				modalSelected:"全租模式",
 				linum:0,
-				expenseNum:0,
-				flagclick:false,
+				expenseNum:0,			
 				type:"sum",
+				expenseType:"3",
 				orderNo:"",
-				increase:false
+				increase:false,
+				openId:""
+			}
+		},
+		computed:{
+			opendId:function(){				
+				return $store.state.openId
 			}
 		},
 		methods:{
@@ -60,75 +69,173 @@
 				console.log(eq,index)
 				if(eq !== 1) return;
 				this.expenseNum = index;
-				this.type = value.type;
-				
-				
-				console.log("expensechose--------",this.flagclick)
+				this.type = value.type||"3";
+				this.expenseType = this.type;
+				/*this.selected = e.target.className;
+				console.log("expensechose--------",this.selected )*/
 			},
 			modalchose:function(value,eq){
-				
-				if(eq == 1){
-					this.flagclick = true;
-					return
-				}else{
-					this.flagclick = false;
-					this.type ="sum";
-				}
+				if(eq == 1 ) return	;	
+				this.type ="sum";		
 				console.log("modalchose--------",value,this.type)
-			},
-			createUid:function(){
-				this.$http.get("https://wanlida-test.yunext.com/external/getUUID")
-                    .then(function(response){
-                     this.deviceUId = response.data;
-                     console.log(this.deviceUId)
-                     /*this.setStorage("generateCode",response.data.data);
-                     this.judgeStorage("generateCode"); */                    
-                });
+				//console.log("modalchose------",e,dom,classname)
 			},
 			createOrder:function(){
-
-				var href = location.href.split("?");
-				var condition = href.slice(1,href.length);
-				this.sn = condition[0].split("=")[1];
-
-				console.log(this.sn)
+				var that = this;
+				console.log(this.sn,this.openId)
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
-						"sn":/*'0095699FA99C'*/this.sn,
-						"uuid":this.deviceUId,
-						"type":this.type,
-						"increase":this.increase}
+						"sn":/*'0095699FA99C'*/that.sn,
+						"openId":that.openId,
+						"type":that.type,
+						"increase":that.increase}
 					}).then(function(response){
 						
 						if(response.data.status ==10000){
 							
-							this.orderNo = response.data
-							this.pay(this.orderNo)
+							that.orderNo = response.data.data
+							that.pay(that.orderNo)
 								
 						}else{
 							alert(response.data.msg);
 						}
-						console.log(this.orderNo)					
+						console.log(that.orderNo)					
 					})	
 			},
 			pay:function(orderNo){
+				var that = this;
 				this.$http.post("https://wanlida-test.yunext.com/external/payOrder/wxPay",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'}, params:{
 						"orderNo":this.orderNo,
 						"body":"租赁万利达空净"}
 					}).then(function(response){
-						window.location = response.data;
+						//window.location = response.data;
+
 						/*this.$router.push({
 	                    	name:'router2',
-	                    	params:{}
-			            }) ;*/ 
+	                    	params:{
+	                    		sn:this.sn
+	                    	}
+			            }) ;*/
+			           if(response.data.status==10000){
+			            	var data = response.data.data;
+			            	console.log(data.appId)
+			            		that.weixinpay(data.appId,data.nonceStr,data.package,data.paySign,data.signType,data.timeStamp);
+			            		/*if (typeof WeixinJSBridge == "undefined"){
+			            		    if( document.addEventListener ){
+			            		        document.addEventListener('WeixinJSBridgeReady', this.weixinpay, false);
+			            		    }else if (document.attachEvent){
+			            		        document.attachEvent('WeixinJSBridgeReady', this.weixinpay); 
+			            		        document.attachEvent('onWeixinJSBridgeReady', this.weixinpay);
+			            		    }
+			            		}else{
+			            		    this.weixinpay();
+			            		} 	*/
+			            }else{
+			            	alert(response.data.msg);	
+			            }
+
 				})
-			}
+			           
+			},
+			weixinpay:function(appId,nonceStr,package,paySign,signType,timeStamp){
+				var that = this;
+				WeixinJSBridge.invoke(
+        		'getBrandWCPayRequest', {
+            	"appId":appId,     //公众号名称，由商户传入     
+            	"timeStamp":timeStamp,         //时间戳，自1970年以来的秒数     
+            	"nonceStr":nonceStr, //随机串     
+            	"package":package,     
+            	"signType":signType,         //微信签名方式：     
+            	"paySign":paySign //微信签名 
+       			 },function(res){     
+           			 if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+           			 	/*this.$router.push({
+	                    	name:'router2',
+	                    	query:{
+	                    		sn:this.sn,
+	                    		opendId:this.openId
+	                    	}
+			            }) */
+			            window.location = "https://wanlida-test.yunext.com/weixin/index.html#/statebefore?sn="+that.sn+"&openId="+that.openId;
+           			 } // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+			    });  
+			
+			},
+			handleHref:function(){
+				
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		      	var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+		    }
 
 		},
 		created:function(){
-			this.createUid();
-			
-
+			//this.createUid();
+			var arr = this.handleHref();
+			this.sn = arr[0];
+			this.openId = this.decode(decodeURIComponent(arr[1]));
+			console.log("moal---"+ this.openId)
 		}
 
 	}
@@ -169,11 +276,11 @@ line-height:2rem; */
 		width:20px;
 	}
 	.modal-choice .modal-item .modal-desc .icon.icon-unselected{
-		background:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;
+		background:url('/weixin/img/pattern_btn_n@1x.png') no-repeat center;
 		background-size: 100%;
 	}
 	.modal-choice .modal-item .modal-desc .icon.icon-selected{
-		background:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;
+		background:url('/weixin/img/pattern_btn_s@1x.png') no-repeat center;
 		background-size: 100%;
 	}
 	@media only screen and (-webkit-min-device-pixel-ratio:2),
@@ -181,11 +288,11 @@ line-height:2rem; */
 	only screen and (-o-min-device-pixel-ratio:2/1),
 	only screen and (min-device-pixel-ratio:2){
 		.modal-choice .modal-item .modal-desc .icon.icon-unselected{
-			background:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;
+			background:url('/weixin/img/pattern_btn_n@2x.png') no-repeat center;
 			background-size: 100%;
 		}
 		.modal-choice .modal-item .modal-desc .icon.icon-selected{
-			background:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;
+			background:url('/weixin/img/pattern_btn_s@2x.png') no-repeat center;
 			background-size: 100%;
 		}
 	}
@@ -194,11 +301,11 @@ line-height:2rem; */
 	only screen and (-o-min-device-pixel-ratio:3/1),
 	only screen and (min-device-pixel-ratio:3){
 		.modal-choice .modal-item .modal-desc .icon.icon-unselected{
-			background:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;
+			background:url('/weixin/img/pattern_btn_n@3x.png') no-repeat center;
 			background-size: 100%;
 		}
 		.modal-choice .modal-item .modal-desc .icon.icon-selected{
-			background:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;
+			background:url('/weixin/img/pattern_btn_s@3x.png') no-repeat center;
 			background-size: 100%;
 		}
 	}

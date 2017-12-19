@@ -9226,15 +9226,18 @@ var footer = __webpack_require__ (23);
 var model = __webpack_require__ (25);
 var order = __webpack_require__ (30);
 var state = __webpack_require__ (35);
+var statebefore = __webpack_require__ (40);
 /*创建路由*/
 var router = new VueRouter({
   routes:[
     {path:'/',component:model},
     {path:'/state',component:state},
     {path:'/order',component:order},
+    {path:'/statebefore',component:statebefore},
     {name:"router1",path:"/",component:state},
     {name:"router2",path:"/",component:order},
     {name:"router3",path:"/order",component:model},
+    {name:"router4",path:"/order",component:statebefore}
   ]
 })
 
@@ -9254,8 +9257,11 @@ var router = new VueRouter({
 //   //   return {testdata : this.message}
 //   // }
 // })
+
 var store = new Vuex.Store({
   state: {
+    sn:"",
+    openId:"",
     sum: 0,
     free:false,
     list:[],
@@ -9276,28 +9282,133 @@ var store = new Vuex.Store({
     },
      calmodel(state,arr) {
       state.model = arr
+    },
+    calopenId(state,str) {
+      state.openId = str
     }
   }
 })
 var test = new Vue({
+  data:{
+    data1:{
+      sn:'',//0095699FA99C
+      status:''
+    },
+    sn:"",
+    url:"",
+    imgSrc:""
+  },
   created:function(){
-    var that =this;
-     var href = location.href.split("?");
-         var condition = href.slice(1,href.length);
-         //console.log(condition,href)      
-         if(condition.length==0){
-            alert("SN码不存在！");
-            return;
-         }else{
-            this.sn = condition[0].split("=")[1];
+        var that =this;
+        var returnFlag = this.handleHref();
+        if(returnFlag){
+          this.sendRquest();
+        }else{
+          this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
+            window.location = response.data.data.url;
+            this.handleHref();
+          })
+          
+       }
            
-            //wanlida/test.json
-            this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
+  },
+  
+  methods:{
+    handleHref:function(){
+      
+        var arr = [];
+        var href = location.href.split("?");      
+        var condition = href.slice(1,href.length);
+       
+        if(condition.length<0){
+          alert("SN码不存在！");
+          return;
+        }else{
+           this.sn = condition[0].split("=")[1];
+          
+        }
+        
+        console.log(condition[0].toString().indexOf("&")>0)
+        if(condition[0].indexOf("&")>0){
+          cond = condition[0].split("&");           
+          for(var i=0;i<cond.length;i++){
+            var name = cond[i].split("=")[0];
+            var value = cond[i].split("=")[1];
+            arr.push(value)         
+          }
+          this.sn = arr[0];
+         
+          
+          this.openId = this.decode(decodeURIComponent(arr[1]));
+          
+          console.log("index-----"+this.openId)
+          store.commit('calopenId',this.openId);
+          console.log(this.openId)
+          return true;
+        }else{
+          return false;                   
+        }
+                       
+    },
+    decode:function(input){
+         // private property
+      _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+ 
+      var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+        while (i < input.length) {
+            enc1 = _keyStr.indexOf(input.charAt(i++));
+            enc2 = _keyStr.indexOf(input.charAt(i++));
+            enc3 = _keyStr.indexOf(input.charAt(i++));
+            enc4 = _keyStr.indexOf(input.charAt(i++));
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+            output = output + String.fromCharCode(chr1);
+            if (enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            if (enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+        output = this._utf8_decode(output);
+        return output;
+
+    },
+    _utf8_decode:function(utftext){
+      var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+        while ( i < utftext.length ) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            } else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            } else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    },
+    sendRquest:function(){
+       //wanlida/test.json
+      this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
               if(response.data.status==10000){
                 test.data1 = response.data.data;
                 /*store.commit('calsum',response.data.sum);
                 store.commit('calfree',response.data.free);
-                store.commit('calexpense',response.data.expensesList);*/
+                store.commit('calexpense',response.data.expensesList);*/  
                 store.commit('calstatus',response.data.data.unifyStatus);
                 store.commit('calmodel',response.data.data.modeList);
 
@@ -9317,21 +9428,10 @@ var test = new Vue({
               }
               
               
-            })
-        }    
-  },
-  data:{
-    data1:{
-      sn:'',//0095699FA99C
-      status:''
-    },
-    sn:"",
-    imgSrc:""
-  },
-  methods:{
-    chosexxx:function(){
-      alert('haha')
+          });
+          
     }
+   
   },
   store,
   components: {
@@ -9340,6 +9440,60 @@ var test = new Vue({
   },
   router
 }).$mount('#app');
+
+/*var publicFunction = {
+   decode:function(input){
+         // private property
+      _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+ 
+      var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+        while (i < input.length) {
+            enc1 = _keyStr.indexOf(input.charAt(i++));
+            enc2 = _keyStr.indexOf(input.charAt(i++));
+            enc3 = _keyStr.indexOf(input.charAt(i++));
+            enc4 = _keyStr.indexOf(input.charAt(i++));
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+            output = output + String.fromCharCode(chr1);
+            if (enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            if (enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+        output = this._utf8_decode(output);
+        return output;
+
+    },
+    _utf8_decode:function(utftext){
+      var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+        while ( i < utftext.length ) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            } else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            } else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    }
+  }  */
 
 /***/ }),
 /* 7 */
@@ -25632,7 +25786,7 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\header.vue"
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\header.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] header.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -25643,9 +25797,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7afae782", Component.options)
+    hotAPI.createRecord("data-v-84e2d162", Component.options)
   } else {
-    hotAPI.reload("data-v-7afae782", Component.options)
+    hotAPI.reload("data-v-84e2d162", Component.options)
   }
 })()}
 
@@ -25663,13 +25817,13 @@ var content = __webpack_require__(19);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("247fcc28", content, false);
+var update = __webpack_require__(2)("5d0181ad", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-7afae782!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./header.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-7afae782!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./header.vue");
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-84e2d162!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./header.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-84e2d162!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./header.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -25687,7 +25841,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\t/* padding:2% 11%;\n\t\tpadding-top:4%; */\n\t\tpadding:0.2rem 2rem;\n\t\tpadding-top:0.4rem;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\t/* padding: 2% 3%; */\n\t\tpadding:0.3rem;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\t/* padding:4% 11%; */\n\t\tpadding:0.3rem 1rem;\n\t\tpadding-bottom:0.2rem;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n\t\tdisplay:flex;\n}\n.device .info-base.left{\n\t\tflex:8;\n}\n.device .info-PM.right{\n\t\tflex:3;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.2rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.state-value.normal{\n\t\t color: #7ED321;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.2rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:0.8rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n\t\twidth:100%;\n    \ttop: 0;\n}\n", ""]);
+exports.push([module.i, "\n.device{\n\t\tmargin-bottom: 0.6rem;\n}\n.device .header{\n\t\theight:;\n\t\t-width:100%;\n\t\t/* padding:2% 11%;\n\t\tpadding-top:4%; */\n\t\tpadding:0.2rem 2rem;\n\t\tpadding-top:0.4rem;\n\t\tbackground-color:#E60012;\n\t\tcolor:#fff;\n}\n.device .header .header-left{\n\t\t/* padding: 2% 3%; */\n\t\tpadding:0.3rem;\n}\n.device .header .title{\n\t\tfont-size:18px;\n}\n.device .info{\n\t\t/* padding:4% 11%; */\n\t\tpadding:0.3rem 1rem;\n\t\tpadding-bottom:0.2rem;\n\t\toverflow: hidden;\n\t\tbackground-color:#fff;\n\t\tdisplay:flex;\n}\n.device .info-base.left{\n\t\tflex:8;\n}\n.device .info-PM.right{\n\t\tflex:3;\n}\n.device .info-base .item{\n\t\tpadding-bottom:0.2rem;\n}\n.state-value{\n        font-size: 0.625rem;\n}\n.num{\n\t\tfont-size: 0.775rem;\n\t\tpadding-top: 0.2rem;\n\t\ttext-align: center;\n\t\tfont-weight:bold;\n}\n.num.normal,.state-value.normal{\n\t\tcolor: #7ED321;\n\t\t/*小于100*/\n}\n.num.alarm,.state-value.alarm{\n\t\tcolor: #F5A623;\n\t\t/*101-150*/\n}\n.num.danger,.state-value.danger{\n\t\tcolor: #FF4C50;\n\t\t/*>150*/\n}\n.radius{\n\t\tposition: relative;\n    \ttop: 0;\n\t\theight:0.8rem;\n\t\twidth:100%;  \t\n    \tbackground: #fff;\n}\n.radius>img{\n\t\tposition: absolute;\n\t\twidth:100%;\n    \ttop: 0;\n}\n", ""]);
 
 // exports
 
@@ -25773,13 +25927,28 @@ module.exports = function listToStyles (parentId, list) {
 module.exports = {
 	props:['message'],
 	data:function(){
-		return {
-			
+		return{
+			status:0,
+			pmnum:99
 		}
 	},
 	computed:{
 		headerdata:function(){
 			return this.message
+		},
+		fontStyle:function(){
+			return {
+				"normal":this.status==0,
+				"alarm":this.status==-1||this.status==-2,
+				"danger":this.status==1||this.status==2||this.status==3||this.status==4
+			}
+		},
+		numStyle:function(){
+				return {
+				"normal":(this.pnum ==100||this.pmnum<100) && this.pmnum>0,
+				"alarm":this.pmnum>100 && (this.pmnum<150 || this.pmnum ==150),
+				"danger":this.pmnum>150
+			}
 		}
 	},
 	filters:{
@@ -25787,23 +25956,32 @@ module.exports = {
 			var result = "";
 			switch(value){
 				case -2:
-					result = "设备繁忙";
+					result = "设备使用中";
 					break;
 				case -1:
 					result = "离线";
 					break;
 				case 0:
 					result = "正常";
+					status = 0;
 					break;
-				default:
-					result ="故障";
+				case 1:
+					result ="pm2.5 故障";
 					break;
+				case 2:
+					result ="光净化故障";
+					break;	
+				case 3:
+					result ="风机故障";
+					break;
+				case 4:
+					result ="缺水故障";
+					break;		
 
 			}
 			return result;
 		}
 	}
-	
 };
 
 
@@ -25829,22 +26007,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "device-state item"
   }, [_vm._m(2), _vm._v(" "), _c('span', [_vm._v("设备当前状态：")]), _c('span', {
-    staticClass: "state-value normal"
-  }, [_vm._v(_vm._s(_vm._f("statusfilter")(_vm.$store.state.status)))])]), _vm._v(" "), _c('div', {
+    staticClass: "state-value",
+    class: _vm.fontStyle
+  }, [_vm._v(_vm._s(_vm._f("statusfilter")(_vm.headerdata.unifyStatus)))])]), _vm._v(" "), _c('div', {
     staticClass: "device-state item"
   }, [_vm._m(3), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.headerdata.province) + _vm._s(_vm.headerdata.city) + _vm._s(_vm.headerdata.district) + _vm._s(_vm.headerdata.address))])])]), _vm._v(" "), _c('div', {
     staticClass: "info-PM right"
   }, [_c('div', [_vm._v("当前PM2.5")]), _vm._v(" "), _c('div', {
-    staticClass: "num danger"
+    staticClass: "num",
+    class: _vm.numStyle
   }, [_vm._v(_vm._s(_vm.headerdata.pm))])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "header-left logo left"
   }, [_c('img', {
     attrs: {
-      "src": "img/icon_logo@1x.png",
+      "src": "/weixin/img/icon_logo@1x.png",
       "alt": "",
-      "srcset": "img/icon_logo@2x.png 2x"
+      "srcset": "/weixin/img/icon_logo@2x.png 2x"
     }
   })])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -25852,9 +26032,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "radius"
   }, [_c('img', {
     attrs: {
-      "src": "/wanlida/img/top_bg@1x.png",
+      "src": "/weixin/img/top_bg@1x.png",
       "alt": "",
-      "srcset": "/wanlida/img/top_bg@2x.png 2x"
+      "srcset": "/weixin/img/top_bg@2x.png 2x"
     }
   })])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -25862,9 +26042,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "icon icon-device"
   }, [_c('img', {
     attrs: {
-      "src": "/wanlida/img/icon_condition@1x.png",
+      "src": "/weixin/img/icon_condition@1x.png",
       "alt": "",
-      "srcset": "/wanlida/img/icon_condition@2x.png 2x"
+      "srcset": "/weixin/img/icon_condition@2x.png 2x"
     }
   })])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -25872,9 +26052,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "icon icon-location"
   }, [_c('img', {
     attrs: {
-      "src": "/wanlida/img/icon_place@1x.png",
+      "src": "/weixin/img/icon_place@1x.png",
       "alt": "",
-      "srcset": "/wanlida/img/icon_place@2x.png 2x"
+      "srcset": "/weixin/img/icon_place@2x.png 2x"
     }
   })])
 }]}
@@ -25882,7 +26062,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-7afae782", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-84e2d162", module.exports)
   }
 }
 
@@ -25900,7 +26080,7 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\footer.vue"
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\footer.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] footer.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -25911,9 +26091,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-bd5faf66", Component.options)
+    hotAPI.createRecord("data-v-c7479946", Component.options)
   } else {
-    hotAPI.reload("data-v-bd5faf66", Component.options)
+    hotAPI.reload("data-v-c7479946", Component.options)
   }
 })()}
 
@@ -25941,7 +26121,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-bd5faf66", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-c7479946", module.exports)
   }
 }
 
@@ -25963,7 +26143,7 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\model.vue"
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\model.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] model.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -25974,9 +26154,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-403dd067", Component.options)
+    hotAPI.createRecord("data-v-4607b952", Component.options)
   } else {
-    hotAPI.reload("data-v-403dd067", Component.options)
+    hotAPI.reload("data-v-4607b952", Component.options)
   }
 })()}
 
@@ -25994,13 +26174,13 @@ var content = __webpack_require__(27);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("6d538aee", content, false);
+var update = __webpack_require__(2)("15b96406", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-403dd067!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./model.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-403dd067!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./model.vue");
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4607b952!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./model.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4607b952!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./model.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -26018,7 +26198,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding: 0.3rem  0; */\n\t\tpadding-top:0.3rem;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.4);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n\t\theight:20px;\n\t\twidth:20px;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\tbackground:url('/wanlida/img/pattern_btn_n@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\tbackground:url('/wanlida/img/pattern_btn_s@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_n@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/wanlida/img/pattern_btn_s@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_0{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0.2rem 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n#pay.active{\n\t\tbackground-color: #E60012 !important;\n}\n", ""]);
+exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding: 0.3rem  0; */\n\t\tpadding-top:0.3rem;\n}\n.modal-choice .modal-item{\n\t\tdisplay:flex;\n\t\tposition:relative;\n\t\talign-items: center;\n\t\tmargin-bottom:0.3rem;\n/* \t\theight:2rem;\nline-height:2rem; */\n\t\tpadding:0.5rem 0.6rem;\n\t\tbackground-color:rgba(255,255,255,0.4);\n}\n.modal-choice .modal-item.active{\n\t\tbackground-color:rgba(255,255,255,1);\n}\n.modal-choice .modal-item .modal-desc{\n\t\tflex:8;\n\t\tdisplay: flex;\n\t\talign-items: center;\n\t\tmargin-left:0.5rem;\n\t\tborder-right:2px solid #E6E6E6;\n}\n.modal-choice .modal-item .modal-desc p{\n\t\tpadding-left:0.5rem;\n}\n.modal-choice .modal-item .modal-desc .icon{\n\t\theight:20px;\n\t\twidth:20px;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\tbackground:url('/weixin/img/pattern_btn_n@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\tbackground:url('/weixin/img/pattern_btn_s@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/weixin/img/pattern_btn_n@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/weixin/img/pattern_btn_s@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.modal-choice .modal-item .modal-desc .icon.icon-unselected{\n\t\t\tbackground:url('/weixin/img/pattern_btn_n@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.modal-choice .modal-item .modal-desc .icon.icon-selected{\n\t\t\tbackground:url('/weixin/img/pattern_btn_s@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n.modal-choice .modal-item .modal-desc .modal{\n\t\tfont-size:0.685rem;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_0{\n\t\tcolor:#FF4C50;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_1{\n\t\tcolor:#F5A623;\n}\n.modal-choice .modal-item .modal-desc .modal.modal_2{\n\t\tcolor:#7ED321;\n}\n.modal-price{\n\t\tflex:2;\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n}\n.modal-price .price-flag,\n\t.time-choice.time-modal .amount .price-flag\n\t.time-choice.active .time-modal .amount .price-flag{\n\t\tfont-size:0.465rem;\n}\n.modal-price .price,\n\t.time-choice .time-modal .amount .price,\n\t.time-choice.active .time-modal .amount .price{\n\t\tfont-size:0.9rem;\n\t\tfont-weight: bold;\n}\n.modal-price .price.free{\n\t\tfont-size:0.765rem;\n}\n.time-choice{\n\t\toverflow: hidden;\n\t\tfont-size:0.465rem;\n\t\tcolor:#D9D9D9;\n}\n.time-choice .time-modal{\n\t\tfloat:left;\n\t\tfont-size: 0.465rem;\n\t\tborder: 1px solid;\n        padding: 0.2rem 0.4rem;\n        border-radius: 0.7rem;\n        margin-right:0.5rem;\n}\n.time-choice .time-modal:first-child{\n\t\tbackground-color:#D9D9D9;\n\t\tcolor:#fff;\n}\n.time-choice.active .time-modal{\n\t\tborder-color:#F5A623;\n\t\tcolor:#F5A623;\n\t\tbackground-color:#fff;\n}\n.time-choice.active .time-modal.active{\n\t\tbackground-color:#F5A623;\n\t\tborder-color:#F5A623;\n\t\tcolor:#fff;\n}\n.time-choice .time-modal .tnum{\n\t\tfont-size:0.675rem;\n}\n.time-choice .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n.time-choice.active .time-modal .amount{\n\t\tcolor:#FF4C50;\n\t\ttext-align:center;\n\t\tposition: absolute;\n\t    top: 50%;\n\t    margin-top: -0.5rem;\n\t    left:84%;\n}\n#pay.active{\n\t\tbackground-color: #E60012 !important;\n}\n", ""]);
 
 // exports
 
@@ -26063,20 +26243,29 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 //
 //
 //
+//
+//
 
 	module.exports = {
 		data:function(){
 			return {
 				sn:"",
+				openId:"",
 				deviceUId:"",
 				modalActive:false,
 				modalSelected:"全租模式",
 				linum:0,
-				expenseNum:0,
-				flagclick:false,
+				expenseNum:0,			
 				type:"sum",
+				expenseType:"3",
 				orderNo:"",
-				increase:false
+				increase:false,
+				openId:""
+			}
+		},
+		computed:{
+			opendId:function(){				
+				return $store.state.openId
 			}
 		},
 		methods:{
@@ -26089,75 +26278,173 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 				console.log(eq,index)
 				if(eq !== 1) return;
 				this.expenseNum = index;
-				this.type = value.type;
-				
-				
-				console.log("expensechose--------",this.flagclick)
+				this.type = value.type||"3";
+				this.expenseType = this.type;
+				/*this.selected = e.target.className;
+				console.log("expensechose--------",this.selected )*/
 			},
 			modalchose:function(value,eq){
-				
-				if(eq == 1){
-					this.flagclick = true;
-					return
-				}else{
-					this.flagclick = false;
-					this.type ="sum";
-				}
+				if(eq == 1 ) return	;	
+				this.type ="sum";		
 				console.log("modalchose--------",value,this.type)
-			},
-			createUid:function(){
-				this.$http.get("https://wanlida-test.yunext.com/external/getUUID")
-                    .then(function(response){
-                     this.deviceUId = response.data;
-                     console.log(this.deviceUId)
-                     /*this.setStorage("generateCode",response.data.data);
-                     this.judgeStorage("generateCode"); */                    
-                });
+				//console.log("modalchose------",e,dom,classname)
 			},
 			createOrder:function(){
-
-				var href = location.href.split("?");
-				var condition = href.slice(1,href.length);
-				this.sn = condition[0].split("=")[1];
-
-				console.log(this.sn)
+				var that = this;
+				console.log(this.sn,this.openId)
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
-						"sn":/*'0095699FA99C'*/this.sn,
-						"uuid":this.deviceUId,
-						"type":this.type,
-						"increase":this.increase}
+						"sn":/*'0095699FA99C'*/that.sn,
+						"openId":that.openId,
+						"type":that.type,
+						"increase":that.increase}
 					}).then(function(response){
 						
 						if(response.data.status ==10000){
 							
-							this.orderNo = response.data
-							this.pay(this.orderNo)
+							that.orderNo = response.data.data
+							that.pay(that.orderNo)
 								
 						}else{
 							alert(response.data.msg);
 						}
-						console.log(this.orderNo)					
+						console.log(that.orderNo)					
 					})	
 			},
 			pay:function(orderNo){
+				var that = this;
 				this.$http.post("https://wanlida-test.yunext.com/external/payOrder/wxPay",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'}, params:{
 						"orderNo":this.orderNo,
 						"body":"租赁万利达空净"}
 					}).then(function(response){
-						window.location = response.data;
+						//window.location = response.data;
+
 						/*this.$router.push({
 	                    	name:'router2',
-	                    	params:{}
-			            }) ;*/ 
+	                    	params:{
+	                    		sn:this.sn
+	                    	}
+			            }) ;*/
+			           if(response.data.status==10000){
+			            	var data = response.data.data;
+			            	console.log(data.appId)
+			            		that.weixinpay(data.appId,data.nonceStr,data.package,data.paySign,data.signType,data.timeStamp);
+			            		/*if (typeof WeixinJSBridge == "undefined"){
+			            		    if( document.addEventListener ){
+			            		        document.addEventListener('WeixinJSBridgeReady', this.weixinpay, false);
+			            		    }else if (document.attachEvent){
+			            		        document.attachEvent('WeixinJSBridgeReady', this.weixinpay); 
+			            		        document.attachEvent('onWeixinJSBridgeReady', this.weixinpay);
+			            		    }
+			            		}else{
+			            		    this.weixinpay();
+			            		} 	*/
+			            }else{
+			            	alert(response.data.msg);	
+			            }
+
 				})
-			}
+			           
+			},
+			weixinpay:function(appId,nonceStr,package,paySign,signType,timeStamp){
+				var that = this;
+				WeixinJSBridge.invoke(
+        		'getBrandWCPayRequest', {
+            	"appId":appId,     //公众号名称，由商户传入     
+            	"timeStamp":timeStamp,         //时间戳，自1970年以来的秒数     
+            	"nonceStr":nonceStr, //随机串     
+            	"package":package,     
+            	"signType":signType,         //微信签名方式：     
+            	"paySign":paySign //微信签名 
+       			 },function(res){     
+           			 if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+           			 	/*this.$router.push({
+	                    	name:'router2',
+	                    	query:{
+	                    		sn:this.sn,
+	                    		opendId:this.openId
+	                    	}
+			            }) */
+			            window.location = "https://wanlida-test.yunext.com/weixin/index.html#/statebefore?sn="+that.sn+"&openId="+that.openId;
+           			 } // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+			    });  
+			
+			},
+			handleHref:function(){
+				
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		      	var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+		    }
 
 		},
 		created:function(){
-			this.createUid();
-			
-
+			//this.createUid();
+			var arr = this.handleHref();
+			this.sn = arr[0];
+			this.openId = this.decode(decodeURIComponent(arr[1]));
+			console.log("moal---"+ this.openId)
 		}
 
 	}
@@ -26209,7 +26496,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, _vm._l((o.expensesList), function(d, index) {
       return _c('li', {
         staticClass: "time-modal",
-        class: [(_vm.expenseNum == index) ? 'active' : ''],
+        class: [(_vm.expenseNum == index && _vm.linum == 1) ? 'active' : ''],
         on: {
           "click": function($event) {
             _vm.expenseChose(d, eq, index)
@@ -26217,12 +26504,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }, [_c('span', {
         staticClass: "tnum"
-      }, [_vm._v(_vm._s(d.type))]), _vm._v("小时\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t"), _c('span', {
+      }, [_vm._v(_vm._s(d.type))]), _vm._v("小时\n\t\t\t\t\t\t\t\t"), _c('span', {
         directives: [{
           name: "show",
           rawName: "v-show",
-          value: ((_vm.expenseNum == index)),
-          expression: "(expenseNum==index)"
+          value: (_vm.linum !== 1),
+          expression: "linum!==1"
+        }],
+        staticClass: "amount"
+      }, [_c('span', {
+        staticClass: "price-flag"
+      }, [_vm._v("￥")]), _c('span', {
+        staticClass: "price"
+      }, [_vm._v("3")])]), _vm._v(" "), _c('span', {
+        directives: [{
+          name: "show",
+          rawName: "v-show",
+          value: ((_vm.expenseNum == index && _vm.linum == 1)),
+          expression: "(expenseNum==index&& linum==1)"
         }],
         staticClass: "amount"
       }, [_c('span', {
@@ -26243,7 +26542,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_vm._v("￥")]), _c('span', {
       staticClass: "price"
     }, [_vm._v(_vm._s(o.amount))])])])
-  })), _vm._v(" "), _c('p', [_vm._v("选择：" + _vm._s(_vm.modalSelected))]), _vm._v(" "), _c('div', {
+  })), _vm._v(" "), _c('p', [_vm._v("选择：" + _vm._s(_vm.modalSelected)), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.linum == 1),
+      expression: "linum==1"
+    }]
+  }, [_vm._v(_vm._s(_vm.expenseType) + "小时")])]), _vm._v(" "), _c('div', {
     staticClass: "state-pay"
   }, [_c('div', {
     class: [_vm.$store.state.status == 0 ? 'active' : ''],
@@ -26263,7 +26569,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-403dd067", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-4607b952", module.exports)
   }
 }
 
@@ -26285,7 +26591,7 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\order.vue"
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\order.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] order.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -26296,9 +26602,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-be827be8", Component.options)
+    hotAPI.createRecord("data-v-3d7d14fc", Component.options)
   } else {
-    hotAPI.reload("data-v-be827be8", Component.options)
+    hotAPI.reload("data-v-3d7d14fc", Component.options)
   }
 })()}
 
@@ -26316,13 +26622,13 @@ var content = __webpack_require__(32);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("23cef2fa", content, false);
+var update = __webpack_require__(2)("2e235d20", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-be827be8!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./order.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-be827be8!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./order.vue");
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3d7d14fc!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./order.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3d7d14fc!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./order.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -26349,7 +26655,229 @@ exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-c
 /* 33 */
 /***/ (function(module, exports) {
 
-throw new Error("Module parse failed: Unexpected token (123:9)\nYou may need an appropriate loader to handle this file type.\n| \t\t\t} \n| \t\t},\n| \t\tcreated:function(){\n| \n| \t\t}");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+	module.exports = {
+		data:function(){
+			return {
+				timestamp:"",
+				timeInterval:"",//倒计时结束时间与当前时间的之间的间隔
+				timeIntervalVal: '', // 保存时间间隔的参数
+				sn:"",
+				openId:"",
+				orderNo:"",
+				//orderState:"",
+				timeContent:""
+			}
+		},
+
+		methods:{
+			renew:function(){
+				this.$router.push({
+	            	name:"router3",
+	            	query:{
+	                	sn:this.$route.params.sn,
+	                	openId:this.$route.params.openId
+	            	}
+	            });
+            },
+            /*orderstate:function(sn,openId){
+            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
+					console.log(response.data)
+					this.orderNo = response.data.data.orderNo;
+					//this.orderState = response.data.data.orderStatus;
+					//this.stateJudge(response.data.data.orderStatus)
+				})
+            },
+			orderstate_ask:function(sn,openId){
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					//this.stateJudge(response.data.data.orderStatus);
+					console.log(response.data.data.orderStatus)
+				})
+			},*/
+			countDown:function(){
+				timestamp = $this.$route.params.leftTime;
+				var self = this;
+				var timer = setInterval(handle,1000);
+		       		        
+				var handle = function(){
+					var self = this;
+					var nowTime = new Date();
+			        var endTime = new Date(timestamp * 1000);
+			        var t = endTime.getTime() - nowTime.getTime();
+			        if(t>0){
+			         // var day = Math.floor(t/86400000);
+			          var hour=Math.floor((t/3600000)%24);
+			          var min=Math.floor((t/60000)%60);
+			          var sec=Math.floor((t/1000)%60);
+			          hour = hour < 10 ? "0" + hour : hour;
+			          min = min < 10 ? "0" + min :min;
+			          sec = sec < 10 ? "0" + sec: sec;
+			          var format = '';
+			          
+			          if( hour > 0 ){
+			            format = hour+"小时"+min+"分"+sec+"秒"; 
+			          }
+			          if(day <= 0 && hour <= 0){
+			            format =min+"分"+sec+"秒";
+			          }
+			          self.timeContent = format;
+			          console.log(self.timeContent)
+			          }else{
+				           clearInterval(timer);
+				           /*self.timeContent = self.endText;
+				           self.timeContent = self.endText;*/
+				           //self._callback();
+				          }
+				    }      
+			},		
+			/*handleHref:function(){
+			
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		        var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+
+			}*/
+		},	
+		created:function(){
+			//this.sn=$this.$route.params.sn;
+			
+			/*var arr = this.handleHref();
+			this.sn = arr[0];
+			this.openId = this.decode(decodeURIComponent(arr[1]));*/
+			//setInterval(this.orderstate_ask(this.sn,this.openId),5000)
+			//this.orderstate(this.sn,this.openId);
+
+			//this.countDown(6000);
+
+		}
+	}
+
 
 /***/ }),
 /* 34 */
@@ -26358,7 +26886,15 @@ throw new Error("Module parse failed: Unexpected token (123:9)\nYou may need an 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "order-content"
-  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('div', {
+  }, [_c('div', {
+    staticClass: "timing"
+  }, [_c('div', {
+    staticClass: "clock danger"
+  }, [_vm._v(_vm._s(_vm.timeContent))]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])]), _vm._v(" "), _c('div', {
+    staticClass: "order-info"
+  }, [_c('span', {
+    staticClass: "red-line"
+  }), _vm._v(" "), _c('p', [_vm._v("订单号：" + _vm._s(_vm.orderNo))]), _vm._v(" "), _c('p', [_vm._v("下单时间：2017-11-9  18:04")])]), _vm._v(" "), _c('div', {
     staticClass: "state-pay"
   }, [_c('div', {
     class: [_vm.$store.state.status == 0 ? 'active' : ''],
@@ -26373,24 +26909,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('a', {
     staticClass: "cart"
   }, [_vm._v("续费")])])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "timing"
-  }, [_c('div', {
-    staticClass: "clock danger"
-  }, [_vm._v("04:56:32")]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "order-info"
-  }, [_c('span', {
-    staticClass: "red-line"
-  }), _vm._v(" "), _c('p', [_vm._v("订单号：1003749939411840")]), _vm._v(" "), _c('p', [_vm._v("下单时间：2017-11-9  18:04")])])
-}]}
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-be827be8", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-3d7d14fc", module.exports)
   }
 }
 
@@ -26412,7 +26936,7 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\wanlida\\js\\components\\state.vue"
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\state.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] state.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -26423,9 +26947,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3bc1a5cf", Component.options)
+    hotAPI.createRecord("data-v-4f000e82", Component.options)
   } else {
-    hotAPI.reload("data-v-3bc1a5cf", Component.options)
+    hotAPI.reload("data-v-4f000e82", Component.options)
   }
 })()}
 
@@ -26443,13 +26967,13 @@ var content = __webpack_require__(37);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(2)("ae5be5b2", content, false);
+var update = __webpack_require__(2)("7e86157a", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-3bc1a5cf!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -26467,7 +26991,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/wanlida/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/wanlida/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/wanlida/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
 
 // exports
 
@@ -26589,7 +27113,324 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-3bc1a5cf", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-4f000e82", module.exports)
+  }
+}
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(41)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(43),
+  /* template */
+  __webpack_require__(44),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\statebefore.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] statebefore.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-47c6e77e", Component.options)
+  } else {
+    hotAPI.reload("data-v-47c6e77e", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(42);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("132d7a34", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+	module.exports = {
+		data:function(){
+			return {
+				
+				statetext:"",
+				buttonText:"",
+				state:"",
+				leftTime:""
+			}
+		},
+		/*computed:{
+			imageClass:function(){
+				switch(this.$route.params.status){
+					case -2:
+						this.imageStatus = "used";
+						break;
+					case -1:
+						this.imageStatus = "repair";
+						break;
+					case 0	:
+						break;
+					default:
+						this.imageStatus = "error";
+						break;		
+
+				}
+				return this.imageStatus
+			}
+		},*/
+		methods:{           
+			orderstate_ask:function(){
+				var that = this;
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.openId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.stateJudge(response.data.data.orderStatus);
+					that.state = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					console.log(response.data.data.orderStatus)
+				})
+			},
+			stateJudge:function(value){
+				switch(value){
+                   case 0:
+	                   this.statetext ="等待支付结果...";
+	                   break;
+                   case 10:
+                  	     this.statetext ="支付成功,向设备发送命令中...";	              	    
+	                	break;
+	                case -10:
+	                    this.statetext ="支付失败";
+	                    this.buttonText = "重新支付";
+	                   break;
+	                case -20:
+	                    this.statetext ="设备解锁失败";
+	                    this.buttonText="申请退款";                    
+	                   break; 
+	                case 20:
+	                    this.statetext ="设备解锁成功";
+	                    this.buttonText="确定";	                    
+	                   break;      
+
+                }
+
+			},
+			renew:function(value){
+				if(value==20){
+					this.$router.push({
+	                   	name:'router4',
+	                    query:{
+	                      sn:this.sn,
+	                      openId:this.openId,
+	                      leftTime:this.leftTime
+	                    }
+            		});
+				}
+				
+			},
+			handleHref:function(){
+			
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		        var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+
+			}
+		},	
+		created:function(){
+			//this.sn=$this.$route.params.sn;
+			
+			var arr = this.handleHref();
+			this.sn = arr[0];
+			this.openId = this.decode(decodeURIComponent(arr[1]));
+			this.orderstate_ask();
+			setInterval(this.orderstate_ask,5000)
+			//this.orderstate_ask(this.sn,this.openId);
+
+
+		}
+	}
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('div', {
+    staticClass: "state-content"
+  }, [_c('p', [_vm._v(_vm._s(_vm.statetext))])]), _vm._v(" "), _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
+    attrs: {
+      "id": "pay"
+    }
+  }, [_c('a', {
+    staticClass: "cart",
+    class: [_vm.state == (10 || -10 || -20) ? 'active' : ''],
+    on: {
+      "click": function($event) {
+        _vm.renew(_vm.state)
+      }
+    }
+  }, [_vm._v(_vm._s(_vm.buttonText))])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-47c6e77e", module.exports)
   }
 }
 

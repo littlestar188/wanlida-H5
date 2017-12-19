@@ -27,15 +27,15 @@
 		display:inline-block;
 	}
 	.state-content .imgwrapper.used{
-		background:url('/wanlida/img/img_use@1x.png') no-repeat center;
+		background:url('/weixin/img/img_use@1x.png') no-repeat center;
 		background-size: 100%;
 	}
 	.state-content .imgwrapper.error{
-		background:url('/wanlida/img/img_trouble@1x.png') no-repeat center;
+		background:url('/weixin/img/img_trouble@1x.png') no-repeat center;
 		background-size: 100%;
 	}
 	.state-content .imgwrapper.repair{
-		background:url('/wanlida/img/img_maintain@1x.png') no-repeat center;
+		background:url('/weixin/img/img_maintain@1x.png') no-repeat center;
 		background-size: 100%;
 	}
 	.state-content p{
