@@ -51,26 +51,14 @@
 				leftTime:""
 			}
 		},
-		/*computed:{
-			imageClass:function(){
-				switch(this.$route.params.status){
-					case -2:
-						this.imageStatus = "used";
-						break;
-					case -1:
-						this.imageStatus = "repair";
-						break;
-					case 0	:
-						break;
-					default:
-						this.imageStatus = "error";
-						break;		
-
-				}
-				return this.imageStatus
-			}
-		},*/
-		methods:{           
+		methods:{ 
+			ready:function(){
+				var arr = this.handleHref();
+				this.sn = arr[0];
+				this.openId = this.decode(decodeURIComponent(arr[1]));
+				this.orderstate_ask();
+				setInterval(this.orderstate_ask,5000);
+			},          
 			orderstate_ask:function(){
 				var that = this;
 				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.openId).then(function(response){
@@ -189,12 +177,9 @@
 		},	
 		created:function(){
 			//this.sn=$this.$route.params.sn;
+			this.ready();
 			
-			var arr = this.handleHref();
-			this.sn = arr[0];
-			this.openId = this.decode(decodeURIComponent(arr[1]));
-			this.orderstate_ask();
-			setInterval(this.orderstate_ask,5000)
+			
 			//this.orderstate_ask(this.sn,this.openId);
 
 
