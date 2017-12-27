@@ -95,6 +95,8 @@ body{
 }
 #buy a ,#pay a{
     font-size:0.685rem;
+    width: 100%;
+    display: inline-block;
 }
 .money{
     color: #D8232A;

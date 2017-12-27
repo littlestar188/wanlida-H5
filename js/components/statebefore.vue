@@ -2,12 +2,12 @@
 	<div>
 		<div class="state-content">					
 			<p>{{statetext}}</p>
-		</div>		
-		<div class="state-pay">		
-			<div id="pay">
-				<a class="cart"v-bind:class="[state==(10||-10||-20)?'active':'']" @click="renew(state)">{{buttonText}}</a>
-			</div>
 		</div>
+		<div class="state-pay">	
+			<div id="pay"  v-bind:class="[state==20?'active':'']" @click="jump()">
+				<a class="cart">确定</a>
+			</div>
+		</div>				
 	</div>
 </template>
 <style>
@@ -48,28 +48,84 @@
 				statetext:"",
 				buttonText:"",
 				state:"",
-				leftTime:""
+				leftTime:"",
+				createTime:"",
+				handleOpenId:"",
+				openId:""
+				/*time:{
+					type:function
+				}*/
+
 			}
 		},
 		methods:{ 
 			ready:function(){
 				var arr = this.handleHref();
 				this.sn = arr[0];
-				this.openId = this.decode(decodeURIComponent(arr[1]));
-				this.orderstate_ask();
-				setInterval(this.orderstate_ask,5000);
-			},          
+				this.openId = arr[1];
+
+				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
+				console.log("statebefore----ready"+this.openId,this.handleOpenId)
+				this.orderstatek();
+				
+			},
+			timer:function(){
+				
+				var time = setInterval(this.orderstate_ask,2000);
+				if(this.state == 20){
+					this.statetext ="设备解锁成功"
+					clearInterval(time);
+				}else{
+					time;
+				}
+			},
+			orderstatek:function(){
+				var that = this;
+				console.log("orderstate ask----"+this.openId,this.handleOpenId)
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					this.timer();
+					
+					console.log(response.data.data.orderStatus,that.state)
+				})
+			},      
 			orderstate_ask:function(){
 				var that = this;
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.openId).then(function(response){
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
 					//this.orderState = response.data.data.orderStatus;
-					that.stateJudge(response.data.data.orderStatus);
-					that.state = response.data.data.orderStatus;
 					that.leftTime = response.data.data.leftTime;
-					console.log(response.data.data.orderStatus)
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					that.stateJudge(that.state);
+					console.log(response.data.data.orderStatus,that.state)
 				})
 			},
+			jump:function(){
+				//if(this.state == 20){
+					console.log("jump----"+this.openId,this.handleOpenId)
+					this.$router.push({
+	                   	name:'router3',
+	                    query:{
+	                      sn:this.sn,
+	                      openId:decodeURIComponent(this.openId)
+	                    },
+	                    params:{
+	                      orderNo:this.orderNo,		
+	                      leftTime:this.leftTime,
+	                      createTime:this.createTime,
+	                      handleOpenId:this.handleOpenId
+	                    }
+        			});
+
+				//}
+			},
 			stateJudge:function(value){
+
 				switch(value){
                    case 0:
 	                   this.statetext ="等待支付结果...";
@@ -78,33 +134,20 @@
                   	     this.statetext ="支付成功,向设备发送命令中...";	              	    
 	                	break;
 	                case -10:
-	                    this.statetext ="支付失败";
-	                    this.buttonText = "重新支付";
+	                    this.statetext ="支付失败,请返回重新下单";
+	                    //this.buttonText = "重新支付";
 	                   break;
 	                case -20:
 	                    this.statetext ="设备解锁失败";
-	                    this.buttonText="申请退款";                    
+	                    //this.buttonText="申请退款";                    
 	                   break; 
 	                case 20:
 	                    this.statetext ="设备解锁成功";
-	                    this.buttonText="确定";	                    
+	                   // this.buttonText="确定";	                   	                    	                    
 	                   break;      
 
                 }
 
-			},
-			renew:function(value){
-				if(value==20){
-					this.$router.push({
-	                   	name:'router4',
-	                    query:{
-	                      sn:this.sn,
-	                      openId:this.openId,
-	                      leftTime:this.leftTime
-	                    }
-            		});
-				}
-				
 			},
 			handleHref:function(){
 			
@@ -176,11 +219,11 @@
 			}
 		},	
 		created:function(){
-			//this.sn=$this.$route.params.sn;
+			
+			var arr = this.handleHref();
+			this.openId = arr[1];
+			console.log(this.openId)
 			this.ready();
-			
-			
-			//this.orderstate_ask(this.sn,this.openId);
 
 
 		}

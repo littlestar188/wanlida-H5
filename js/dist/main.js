@@ -9225,38 +9225,36 @@ var header = __webpack_require__ (17);
 var footer = __webpack_require__ (23);
 var model = __webpack_require__ (25);
 var order = __webpack_require__ (30);
+var newOrder = __webpack_require__ (45);
 var state = __webpack_require__ (35);
 var statebefore = __webpack_require__ (40);
 /*创建路由*/
 var router = new VueRouter({
   routes:[
-    {path:'/',component:model},
-    {path:'/state',component:state},
-    {path:'/order',component:order},
+    // {path:'/',component:model},
+    // {path:'/state',component:state},
+    // {path:'/order',component:order},
+    // {path:'/statebefore',component:statebefore},
+    // {name:"router1",path:"/",component:state},
+    // // {name:"router2",path:"/",component:order},
+    // {name:"router2",path:"/",component:statebefore},
+    // {name:"router3",path:"/statebefore",component:order},
+    // {name:"router4",path:"/order",component:model}
+    {name:"router4",path:'/',component:model,/*redirect:"/home",
+     subRoutes:{
+        "/home/order":{
+          name:"router5",
+          component:order
+        }
+      }*/
+    },
     {path:'/statebefore',component:statebefore},
-    {name:"router1",path:"/",component:state},
-    {name:"router2",path:"/",component:order},
-    {name:"router3",path:"/order",component:model},
-    {name:"router4",path:"/order",component:statebefore}
+    {name:"router3",path:'/order',component:order},
+    {name:"router1",path:"/state",component:state},
+    {name:"router2",path:"/",component:state},
+    {name:"router5",path:"/newOrder",component:newOrder}
   ]
 })
-
-
-// new Vue({
-//   components: {
-//       'my-header':header,
-//       'my-footer': footer,
-//   },
-            
-//   router
-// }).$mount('#app');
-// Vue.component('my-header',{
-//   props:['message'],
-//   template:header
-//   // data:function(){
-//   //   return {testdata : this.message}
-//   // }
-// })
 
 var store = new Vuex.Store({
   state: {
@@ -9296,10 +9294,26 @@ var test = new Vue({
     },
     sn:"",
     url:"",
-    imgSrc:""
+    imgSrc:"",
+    openId:"",
+    encodeOenId:""
   },
+  /*watch:{
+    router:"init"{
+      handler:function(val,oldVal){
+        console.log(val,oldVal)
+        this.initIndex();
+      },
+      deep:true
+    }
+  },  */
   created:function(){
-        var that =this;
+        this.initIndex();
+           
+  },
+  methods:{
+    initIndex:function(){
+      var that =this;
         var returnFlag = this.handleHref();
         if(returnFlag){
           this.sendRquest();
@@ -9307,13 +9321,11 @@ var test = new Vue({
           this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
             window.location = response.data.data.url;
             this.handleHref();
+            this.handleStateRouter(response.data.unifyStatus);
           })
           
        }
-           
-  },
-  
-  methods:{
+    },
     handleHref:function(){
       
         var arr = [];
@@ -9338,7 +9350,7 @@ var test = new Vue({
           }
           this.sn = arr[0];
          
-          
+          this.encodeOenId = arr[1];
           this.openId = this.decode(decodeURIComponent(arr[1]));
           
           console.log("index-----"+this.openId)
@@ -9349,6 +9361,40 @@ var test = new Vue({
           return false;                   
         }
                        
+    },
+    handleStateRouter:function(unifyStatus){
+        /*switch(unifyStatus){
+            case -1:*/
+            console.log(unifyStatus)
+            if(unifyStatus!==0 && unifyStatus!==(-2)){
+              this.$router.push({
+                    name:'router1',
+                    params:{
+                        sn:this.sn,
+                        status:response.data.unifyStatus
+                    }
+                });
+              
+            }
+
+            if(unifyStatus==(-2)){
+              this.$router.push({
+                    name:'router5',
+                    query:{
+                      sn:this.sn,
+                      openId:decodeURIComponent(this.openId)
+                    },
+                    params:{
+                        sn:this.sn,
+                        status:response.data.unifyStatus,
+                        handleOpenId:this.openId
+                    }
+                });
+            
+            }
+                
+            /*break;*/    
+       
     },
     decode:function(input){
          // private property
@@ -9412,15 +9458,35 @@ var test = new Vue({
                 store.commit('calstatus',response.data.data.unifyStatus);
                 store.commit('calmodel',response.data.data.modeList);
 
-                switch(response.data.data.unifyStatus){
-                  case -1:
+                if(response.data.data.unifyStatus !=0 && response.data.data.unifyStatus!==-2){
+                 
                     this.$router.push({
                         name:'router1',
-                        params:{
+                        query:{
                           sn:this.sn,
-                          status:response.data.data.unifyStatus
+                          openId:this.encodeOenId
+                        },
+                        params:{
+                          status:response.data.data.unifyStatus,
+                          openId:this.openId
                         }
                     })        
+                }
+
+                if(response.data.data.unifyStatus==(-2)){
+                  console.log(this.encodeOenId,this.openId)
+                  this.$router.push({
+                        name:'router5',
+                        query:{
+                          sn:this.sn,
+                          openId:this.encodeOenId
+                        },
+                        params:{
+                            status:response.data.data.unifyStatus,
+                            handleOpenId:this.openId
+                        }
+                    });
+                
                 }
 
               }else{
@@ -26291,13 +26357,13 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 			},
 			createOrder:function(){
 				var that = this;
-				console.log(this.sn,this.openId)
+				console.log("modal---"+this.sn,this.openId)
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
 						"sn":/*'0095699FA99C'*/that.sn,
-						"openId":that.openId,
+						"openId":that.decode(decodeURIComponent(that.openId)),
 						"type":that.type,
-						"increase":that.increase}
+						"increase":(this.$route.params.increase)?true:that.increase}
 					}).then(function(response){
 						
 						if(response.data.status ==10000){
@@ -26386,6 +26452,50 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 				}
 				return arr;					
 			},
+			encode :function (input) {
+			        var output = "";
+			        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+			        var i = 0;
+			        input = _utf8_encode(input);
+			        while (i < input.length) {
+			            chr1 = input.charCodeAt(i++);
+			            chr2 = input.charCodeAt(i++);
+			            chr3 = input.charCodeAt(i++);
+			            enc1 = chr1 >> 2;
+			            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			            enc4 = chr3 & 63;
+			            if (isNaN(chr2)) {
+			                enc3 = enc4 = 64;
+			            } else if (isNaN(chr3)) {
+			                enc4 = 64;
+			            }
+			            output = output +
+			            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
+			            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+			        }
+			        return output;
+			},
+			_utf8_encode:function (string) {
+			      string = string.replace(/\r\n/g,"\n");
+			      var utftext = "";
+			      for (var n = 0; n < string.length; n++) {
+			          var c = string.charCodeAt(n);
+			          if (c < 128) {
+			              utftext += String.fromCharCode(c);
+			          } else if((c > 127) && (c < 2048)) {
+			              utftext += String.fromCharCode((c >> 6) | 192);
+			              utftext += String.fromCharCode((c & 63) | 128);
+			          } else {
+			              utftext += String.fromCharCode((c >> 12) | 224);
+			              utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+			              utftext += String.fromCharCode((c & 63) | 128);
+			          }
+			
+			      }
+			      return utftext;
+			  },
+
 			decode:function(input){
 		         // private property
 		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -26443,7 +26553,7 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 			//this.createUid();
 			var arr = this.handleHref();
 			this.sn = arr[0];
-			this.openId = this.decode(decodeURIComponent(arr[1]));
+			this.openId = arr[1];
 			console.log("moal---"+ this.openId)
 		}
 
@@ -26552,7 +26662,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v(_vm._s(_vm.expenseType) + "小时")])]), _vm._v(" "), _c('div', {
     staticClass: "state-pay"
   }, [_c('div', {
-    class: [_vm.$store.state.status == 0 ? 'active' : ''],
+    class: [_vm.$store.state.status == 0 || this.$route.params.increase ? 'active' : ''],
     attrs: {
       "id": "pay"
     },
@@ -26646,7 +26756,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-content .timing,\n\t.order-content .order-info{\n\t\tbackground-color: #fff;\n\t\tmargin-bottom:0.6rem;\n\t\tpadding: 0.6rem 0;\n}\n.timing p{\n\t\tpadding-left:0;\n}\n.timing>small{\n\t\tcolor:#9B9B9B;\n}\n.timing .clock{\n\t\tcolor:#72BA16;\n\t\tfont-size:2rem;\n\t\tfont-weight: normal;\n}\n.order-content .order-info{\n\t\tposition: relative;\n\t\twidth:90%;\n\t\tmargin:0 auto;\n}\n.timing .clock.danger{\n\t\tcolor:#FF4C50;\n}\n.order-content .order-info p{\n\t\ttext-align: left;\n}\n.order-content .order-info .red-line{\n\t\tposition: absolute;\n\t    display: block;\n\t    width: 0.2rem;\n\t    height: 50%;\n\t    top: 50%;\n\t    margin-top: -5.8%;\n\t    background-color: #E60012;\n}\n\t\n", ""]);
+exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-content .timing,\n\t.order-content .order-info{\n\t\tbackground-color: #fff;\n\t\tmargin-bottom:0.6rem;\n\t\tpadding: 0.6rem 0;\n}\n.timing p{\n\t\tpadding-left:0;\n}\n.timing>small{\n\t\tcolor:#9B9B9B;\n}\n.timing .clock{\n\t\tcolor:#72BA16;\n\t\tfont-size:2rem;\n\t\tfont-weight: normal;\n}\n.order-content .order-info{\n\t\tposition: relative;\n\t\twidth:95%;\n\t\tmargin:0 auto;\n}\n.timing .clock.danger{\n\t\tcolor:#FF4C50;\n}\n.order-content .order-info p{\n\t\ttext-align: left;\n\t\tpadding-left:0.5rem;\n}\n.order-content .order-info .red-line{\n\t\tposition: absolute;\n\t    display: block;\n\t    width: 0.2rem;\n\t    height: 50%;\n\t    top: 50%;\n\t    margin-top: -5.8%;\n\t    background-color: #E60012;\n}\n\t\n", ""]);
 
 // exports
 
@@ -26719,161 +26829,138 @@ exports.push([module.i, "\n.order-content{\n\t\ttext-align: center;\n}\n.order-c
 //
 //
 //
+//
 
 	module.exports = {
 		data:function(){
 			return {
-				timestamp:"",
-				timeInterval:"",//倒计时结束时间与当前时间的之间的间隔
-				timeIntervalVal: '', // 保存时间间隔的参数
 				sn:"",
 				openId:"",
-				orderNo:"",
 				//orderState:"",
-				timeContent:""
+				timeContent:"",/*,
+				createTime:""*/
+				lasttime:0,
+				intervalTime:0,//时间校验变量，
+				current:false	
 			}
 		},
-
+		computed:{
+			orderNo:function(){
+				return this.$route.params.orderNo
+			},
+			createTime:function(){
+				return this.$route.params.createTime
+			}/*,
+			leftTime:function(){
+				return this.$route.params.leftTime
+			}*/
+		},
 		methods:{
+			init:function(){
+				this.lasttime = this.$route.params.leftTime/*50000000*/;				
+				this.loopTimer();
+				this.loopAsk();
+			},
 			renew:function(){
+				console.log(this.$route.query.openId)
 				this.$router.push({
-	            	name:"router3",
+	            	name:"router4",
 	            	query:{
-	                	sn:this.$route.params.sn,
-	                	openId:this.$route.params.openId
+	                	sn:this.$route.query.sn,
+	                	openId:decodeURIComponent(this.$route.query.openId)
+	            	},
+	            	params:{
+	            		increase:true
 	            	}
 	            });
             },
-            /*orderstate:function(sn,openId){
-            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
-					console.log(response.data)
-					this.orderNo = response.data.data.orderNo;
-					//this.orderState = response.data.data.orderStatus;
-					//this.stateJudge(response.data.data.orderStatus)
-				})
+           /* countdown:function(){
+               var that = this;	
+               var leftTimer = function(){
+	               	var leftTime = 1513733983914;			
+	               	var hours = parseInt(leftTime / 1000 / 60 / 60 % 24 , 10); //计算剩余的小时 
+	               	var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟 
+	               	var seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数 
+	               	
+	               	hours = that.checkTime(hours); 
+	               	minutes = that.checkTime(minutes); 
+	               	seconds = that.checkTime(seconds); 
+	               	setInterval("leftTimer("+leftTime+")",1000); 
+	               	that.timeContent =  hours+":"+ minutes+":"+seconds;
+               }
+
+            },*/
+            loopTimer:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.showTimer();
+            		that.lasttime= that.lasttime-1000;
+            	},1000); 
             },
-			orderstate_ask:function(sn,openId){
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
-					//this.orderState = response.data.data.orderStatus;
-					//this.stateJudge(response.data.data.orderStatus);
-					console.log(response.data.data.orderStatus)
-				})
-			},*/
-			countDown:function(){
-				timestamp = $this.$route.params.leftTime;
-				var self = this;
-				var timer = setInterval(handle,1000);
-		       		        
-				var handle = function(){
-					var self = this;
-					var nowTime = new Date();
-			        var endTime = new Date(timestamp * 1000);
-			        var t = endTime.getTime() - nowTime.getTime();
-			        if(t>0){
-			         // var day = Math.floor(t/86400000);
-			          var hour=Math.floor((t/3600000)%24);
-			          var min=Math.floor((t/60000)%60);
-			          var sec=Math.floor((t/1000)%60);
-			          hour = hour < 10 ? "0" + hour : hour;
-			          min = min < 10 ? "0" + min :min;
-			          sec = sec < 10 ? "0" + sec: sec;
-			          var format = '';
-			          
-			          if( hour > 0 ){
-			            format = hour+"小时"+min+"分"+sec+"秒"; 
-			          }
-			          if(day <= 0 && hour <= 0){
-			            format =min+"分"+sec+"秒";
-			          }
-			          self.timeContent = format;
-			          console.log(self.timeContent)
-			          }else{
-				           clearInterval(timer);
-				           /*self.timeContent = self.endText;
-				           self.timeContent = self.endText;*/
-				           //self._callback();
-				          }
-				    }      
-			},		
-			/*handleHref:function(){
-			
-				var href = location.href.split("?");
-				var condition = href.slice(1,href.length);
+            showTimer:function(){
+            	var leftTime = this.lasttime;
 
-				var cond = condition[0].split("&");
-				console.log(cond)
+               	if(leftTime>0){
+               		//console.log(leftTime);
+               		var hours = parseInt(leftTime / 1000 / 60 / 60  , 10); //计算剩余的小时 
+	               	var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟 
+	               	var seconds = parseInt(leftTime / 1000 %60,10);//计算剩余的秒数 
+	               	hours = this.checkTime(hours); 
+	               	minutes = this.checkTime(minutes); 
+	               	seconds = this.checkTime(seconds); 
+	               	this.timeContent =  hours+":"+ minutes+":"+seconds;
+               	}else{
+               		this.timeContent =  "00:00:00";
+               	}			
+               	
+            },
+            ask_leftTime :function(){
+            	var  that = this;
+            	this.intervalTime = this.lasttime;
+            	console.log(this.$route.params.handleOpenId,this.$route.params.openId) 
+            	// var openId = this.$route.params.handleOpenId ||this.$route.params.openId
+            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.$route.params.handleOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		//console.log(that.intervalTime)
+            	});
 
-				var arr = [];	
-				for(var i=0;i<cond.length;i++){
-					var name = cond[i].split("=")[0];
-					var value = cond[i].split("=")[1];
-					arr.push(value)					
-				}
-				return arr;					
-			},
-			decode:function(input){
-		         // private property
-		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-		 
-		        var output = "";
-		        var chr1, chr2, chr3;
-		        var enc1, enc2, enc3, enc4;
-		        var i = 0;
-		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-		        while (i < input.length) {
-		            enc1 = _keyStr.indexOf(input.charAt(i++));
-		            enc2 = _keyStr.indexOf(input.charAt(i++));
-		            enc3 = _keyStr.indexOf(input.charAt(i++));
-		            enc4 = _keyStr.indexOf(input.charAt(i++));
-		            chr1 = (enc1 << 2) | (enc2 >> 4);
-		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-		            chr3 = ((enc3 & 3) << 6) | enc4;
-		            output = output + String.fromCharCode(chr1);
-		            if (enc3 != 64) {
-		                output = output + String.fromCharCode(chr2);
-		            }
-		            if (enc4 != 64) {
-		                output = output + String.fromCharCode(chr3);
-		            }
-		        }
-		        output = this._utf8_decode(output);
-		        return output;
-
-		    },
-		    _utf8_decode:function(utftext){
-		      var string = "";
-		        var i = 0;
-		        var c = c1 = c2 = 0;
-		        while ( i < utftext.length ) {
-		            c = utftext.charCodeAt(i);
-		            if (c < 128) {
-		                string += String.fromCharCode(c);
-		                i++;
-		            } else if((c > 191) && (c < 224)) {
-		                c2 = utftext.charCodeAt(i+1);
-		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-		                i += 2;
-		            } else {
-		                c2 = utftext.charCodeAt(i+1);
-		                c3 = utftext.charCodeAt(i+2);
-		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-		                i += 3;
-		            }
-		        }
-		        return string;
-
-			}*/
-		},	
+            },
+            loopAsk:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.ask_leftTime();
+            		console.log(that.intervalTime,that.lasttime)
+            		
+            		that.lasttime = that.intervalTime;
+            		
+            	},60000);
+            },	
+			checkTime:function(i){
+				if(i<10) 
+				{ 
+				 i = "0" + i; 
+				} 
+				return i; 
+			}			
+		},
+		/*watch:{
+	        $route:"init"{
+	          handler:function(val,oldVal){
+	          	console.log(val,oldVal)
+	          	this.init();
+	          	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.$route.params.handleOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		//console.log(that.intervalTime)
+            	});
+	          },
+	          deep:true
+	        }
+      	},	*/
 		created:function(){
-			//this.sn=$this.$route.params.sn;
 			
-			/*var arr = this.handleHref();
-			this.sn = arr[0];
-			this.openId = this.decode(decodeURIComponent(arr[1]));*/
-			//setInterval(this.orderstate_ask(this.sn,this.openId),5000)
-			//this.orderstate(this.sn,this.openId);
-
-			//this.countDown(6000);
+			this.init();
 
 		}
 	}
@@ -26894,10 +26981,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "order-info"
   }, [_c('span', {
     staticClass: "red-line"
-  }), _vm._v(" "), _c('p', [_vm._v("订单号：" + _vm._s(_vm.orderNo))]), _vm._v(" "), _c('p', [_vm._v("下单时间：2017-11-9  18:04")])]), _vm._v(" "), _c('div', {
+  }), _vm._v(" "), _c('p', [_vm._v("订单号：" + _vm._s(_vm.orderNo))]), _vm._v(" "), _c('p', [_vm._v("下单时间：" + _vm._s(_vm.createTime))])]), _vm._v(" "), _c('div', {
     staticClass: "state-pay"
   }, [_c('div', {
-    class: [_vm.$store.state.status == 0 ? 'active' : ''],
+    staticClass: "active",
     attrs: {
       "id": "pay"
     },
@@ -26991,7 +27078,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n", ""]);
 
 // exports
 
@@ -27045,13 +27132,37 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 module.exports = {
 	data:function(){
 		return {
 			imageStatus:"",
 			status:0,
-			url:""
+			url:"",
+			openId:"",
+			errorContent:""
 		}
 	},
 	computed:{
@@ -27059,14 +27170,28 @@ module.exports = {
 			switch(this.$route.params.status){
 				case -2:
 					this.imageStatus = "used";
+					this.errorContent="设备已经被使用";
 					break;
 				case -1:
 					this.imageStatus = "repair";
+					this.errorContent="设备离线";
 					break;
 				case 0	:
+					this.$router.push({
+	                    name:'router2',
+	                    query:{
+	                    	sn:this.sn,
+                      		openId:decodeURIComponent(this.openId)
+	                    },
+	                    params:{
+	                        sn:this.sn,
+	                        status:response.data.unifyStatus
+	                    }
+	                });
 					break;
 				default:
 					this.imageStatus = "error";
+					this.errorContent="设备故障";
 					break;		
 
 			}
@@ -27075,14 +27200,34 @@ module.exports = {
 	},
 	methods:{
 		ready:function(){
-			this.sn = this.$route.params.sn;
-			this.url = "#/?sn="+this.sn;
+			// this.sn = this.$route..sn;
+			// this.url = "#/?sn="+this.sn;
 			this.status = this.$route.params.status;
-			console.log(this.sn,this.status)
+			console.log(/*this.sn,*/this.status)
+		},
+		handleHref:function(){
+		
+			var href = location.href.split("?");
+			var condition = href.slice(1,href.length);
+
+			var cond = condition[0].split("&");
+			console.log(cond)
+
+			var arr = [];	
+			for(var i=0;i<cond.length;i++){
+				var name = cond[i].split("=")[0];
+				var value = cond[i].split("=")[1];
+				arr.push(value)					
+			}
+			return arr;					
 		}
 	},
+	reload:function(){},
 	created:function(){
+		var arr = this.handleHref();
+		this.openId = arr[1];
 		this.ready();
+
 	}
 }
 
@@ -27097,7 +27242,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "imgwrapper",
     class: _vm.imageClass
-  }), _vm._v(" "), _c('p', [_vm._v("设备已经被使用")])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _vm._m(0)])
+  }), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.errorContent))])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _vm._m(0)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "state-pay"
@@ -27249,28 +27394,84 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 				statetext:"",
 				buttonText:"",
 				state:"",
-				leftTime:""
+				leftTime:"",
+				createTime:"",
+				handleOpenId:"",
+				openId:""
+				/*time:{
+					type:function
+				}*/
+
 			}
 		},
 		methods:{ 
 			ready:function(){
 				var arr = this.handleHref();
 				this.sn = arr[0];
-				this.openId = this.decode(decodeURIComponent(arr[1]));
-				this.orderstate_ask();
-				setInterval(this.orderstate_ask,5000);
-			},          
+				this.openId = arr[1];
+
+				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
+				console.log("statebefore----ready"+this.openId,this.handleOpenId)
+				this.orderstatek();
+				
+			},
+			timer:function(){
+				
+				var time = setInterval(this.orderstate_ask,2000);
+				if(this.state == 20){
+					this.statetext ="设备解锁成功"
+					clearInterval(time);
+				}else{
+					time;
+				}
+			},
+			orderstatek:function(){
+				var that = this;
+				console.log("orderstate ask----"+this.openId,this.handleOpenId)
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					this.timer();
+					
+					console.log(response.data.data.orderStatus,that.state)
+				})
+			},      
 			orderstate_ask:function(){
 				var that = this;
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.openId).then(function(response){
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
 					//this.orderState = response.data.data.orderStatus;
-					that.stateJudge(response.data.data.orderStatus);
-					that.state = response.data.data.orderStatus;
 					that.leftTime = response.data.data.leftTime;
-					console.log(response.data.data.orderStatus)
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					that.stateJudge(that.state);
+					console.log(response.data.data.orderStatus,that.state)
 				})
 			},
+			jump:function(){
+				//if(this.state == 20){
+					console.log("jump----"+this.openId,this.handleOpenId)
+					this.$router.push({
+	                   	name:'router3',
+	                    query:{
+	                      sn:this.sn,
+	                      openId:decodeURIComponent(this.openId)
+	                    },
+	                    params:{
+	                      orderNo:this.orderNo,		
+	                      leftTime:this.leftTime,
+	                      createTime:this.createTime,
+	                      handleOpenId:this.handleOpenId
+	                    }
+        			});
+
+				//}
+			},
 			stateJudge:function(value){
+
 				switch(value){
                    case 0:
 	                   this.statetext ="等待支付结果...";
@@ -27279,33 +27480,20 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
                   	     this.statetext ="支付成功,向设备发送命令中...";	              	    
 	                	break;
 	                case -10:
-	                    this.statetext ="支付失败";
-	                    this.buttonText = "重新支付";
+	                    this.statetext ="支付失败,请返回重新下单";
+	                    //this.buttonText = "重新支付";
 	                   break;
 	                case -20:
 	                    this.statetext ="设备解锁失败";
-	                    this.buttonText="申请退款";                    
+	                    //this.buttonText="申请退款";                    
 	                   break; 
 	                case 20:
 	                    this.statetext ="设备解锁成功";
-	                    this.buttonText="确定";	                    
+	                   // this.buttonText="确定";	                   	                    	                    
 	                   break;      
 
                 }
 
-			},
-			renew:function(value){
-				if(value==20){
-					this.$router.push({
-	                   	name:'router4',
-	                    query:{
-	                      sn:this.sn,
-	                      openId:this.openId,
-	                      leftTime:this.leftTime
-	                    }
-            		});
-				}
-				
 			},
 			handleHref:function(){
 			
@@ -27377,11 +27565,11 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 			}
 		},	
 		created:function(){
-			//this.sn=$this.$route.params.sn;
+			
+			var arr = this.handleHref();
+			this.openId = arr[1];
+			console.log(this.openId)
 			this.ready();
-			
-			
-			//this.orderstate_ask(this.sn,this.openId);
 
 
 		}
@@ -27398,24 +27586,422 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('p', [_vm._v(_vm._s(_vm.statetext))])]), _vm._v(" "), _c('div', {
     staticClass: "state-pay"
   }, [_c('div', {
+    class: [_vm.state == 20 ? 'active' : ''],
     attrs: {
       "id": "pay"
-    }
-  }, [_c('a', {
-    staticClass: "cart",
-    class: [_vm.state == (10 || -10 || -20) ? 'active' : ''],
+    },
     on: {
       "click": function($event) {
-        _vm.renew(_vm.state)
+        _vm.jump()
       }
     }
-  }, [_vm._v(_vm._s(_vm.buttonText))])])])])
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("确定")])])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-47c6e77e", module.exports)
+  }
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(46)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(48),
+  /* template */
+  __webpack_require__(49),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\newOrder.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] newOrder.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-567cbb50", Component.options)
+  } else {
+    hotAPI.reload("data-v-567cbb50", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(47);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("7108c262", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-567cbb50!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./newOrder.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-567cbb50!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./newOrder.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpadding-bottom:0.5rem;\n\t\tcolor:#9B9B9B;\n}\n.imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@2x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@3x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n}\n.order-content{\n\t\ttext-align: center;\n}\n.order-content .timing.newTiming{\n    \tmargin-bottom:0;\n}\t\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+	module.exports = {
+		data:function(){
+			return {
+				sn:"",
+				openId:"",
+				getOpenId:"",
+				//orderState:"",
+				timeContent:"",/*,
+				createTime:""*/
+				lasttime:0,
+				intervalTime:0,//时间校验变量，
+				current:false,
+				orderNo:"",
+				createTime:""
+			}
+		},
+		methods:{
+			init:function(){
+				// this.lasttime = this.$route.params.leftTime/*50000000*/;
+				console.log(this.$route.params.handleOpenId)
+				var arr = this.handleHref();
+				this.openId = arr[1];
+				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+				var that= this;
+            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		that.orderNo = response.data.data.orderNo;
+            		that.createTime = response.data.data.createTime;
+            		that.lasttime = response.data.data.leftTime;
+            		//console.log(that.intervalTime)
+            	});				
+				this.loopTimer();
+				this.loopAsk();
+			},
+			renew:function(){
+				console.log(this.$route.query.openId)
+				if(this.current){
+					this.$router.push({
+		            	name:"router4",
+		            	query:{
+		                	sn:this.$route.query.sn,
+		                	openId:decodeURIComponent(this.$route.query.openId)
+		            	},
+		            	params:{
+		            		increase:true
+		            	}
+		            });
+				}
+				
+            },
+          
+            loopTimer:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.showTimer();
+            		that.lasttime= that.lasttime-1000;
+            	},1000); 
+            },
+            showTimer:function(){
+            	var leftTime = this.lasttime;
+
+               	if(leftTime>0){
+               		//console.log(leftTime);
+               		var hours = parseInt(leftTime / 1000 / 60 / 60  , 10); //计算剩余的小时 
+	               	var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟 
+	               	var seconds = parseInt(leftTime / 1000 %60,10);//计算剩余的秒数 
+	               	hours = this.checkTime(hours); 
+	               	minutes = this.checkTime(minutes); 
+	               	seconds = this.checkTime(seconds); 
+	               	this.timeContent =  hours+":"+ minutes+":"+seconds;
+               	}else{
+               		this.timeContent =  "00:00:00";
+               	}			
+               	
+            },
+            ask_leftTime :function(){
+            	var  that = this;
+            	this.intervalTime = this.lasttime;
+            	console.log(this.$route.params.handleOpenId,this.$route.params.openId,this.getOpenId) 
+            	var arr = this.handleHref();
+				this.openId = arr[1];
+				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		//console.log(that.intervalTime)
+            	});
+
+            },
+            loopAsk:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.ask_leftTime();
+            		console.log(that.intervalTime,that.lasttime)
+            		
+            		that.lasttime = that.intervalTime;
+            		
+            	},60000);
+            },	
+			checkTime:function(i){
+				if(i<10) 
+				{ 
+				 i = "0" + i; 
+				} 
+				return i; 
+			},
+			handleHref:function(){
+				
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		      	var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+		    }	
+		},
+		created:function(){
+			
+			this.init();
+
+		}
+	}
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "order-content"
+  }, [_c('div', {
+    staticClass: "timing",
+    class: [_vm.current == false ? 'newTiming' : '']
+  }, [_c('div', {
+    staticClass: "clock danger"
+  }, [_vm._v(_vm._s(_vm.timeContent))]), _vm._v(" "), _c('small', [_vm._v("剩余时间")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.current),
+      expression: "current"
+    }],
+    staticClass: "order-info"
+  }, [_c('span', {
+    staticClass: "red-line"
+  }), _vm._v(" "), _c('p', [_vm._v("订单号：" + _vm._s(_vm.orderNo))]), _vm._v(" "), _c('p', [_vm._v("下单时间：" + _vm._s(_vm.createTime))])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.current),
+      expression: "!current"
+    }],
+    staticClass: "stateWrapper"
+  }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.current),
+      expression: "!current"
+    }],
+    staticClass: "imgwrapper used"
+  }), _vm._v(" "), _c('div', [_vm._v("设备正在使用中...")])]), _vm._v(" "), _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.current),
+      expression: "current"
+    }],
+    class: [_vm.current == true ? 'active' : ''],
+    attrs: {
+      "id": "pay"
+    },
+    on: {
+      "click": function($event) {
+        _vm.renew()
+      }
+    }
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("续费")])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-567cbb50", module.exports)
   }
 }
 

@@ -8,11 +8,11 @@
 		<div class="order-info">
 			<span class="red-line"></span>
 			<p>订单号：{{orderNo}}</p>
-			<p>下单时间：2017-11-9  18:04</p>
+			<p>下单时间：{{createTime}}</p>
 			
 		</div>
 		<div class="state-pay">	
-			<div id="pay"  v-bind:class="[$store.state.status==0?'active':'']" @click="renew()">
+			<div id="pay" class="active"  @click="renew()"> <!--v-bind:class="[$store.state.status==0?'active':'']"-->
 				<a class="cart">续费</a>
 			</div>
 		</div>	
@@ -42,7 +42,7 @@
 	}
 	.order-content .order-info{
 		position: relative;
-		width:90%;
+		width:95%;
 		margin:0 auto;
 	}
 	.timing .clock.danger{
@@ -50,6 +50,7 @@
 	}
 	.order-content .order-info p{
 		text-align: left;
+		padding-left:0.5rem;
 	}
 	.order-content .order-info .red-line{
 		position: absolute;
@@ -66,157 +67,133 @@
 	module.exports = {
 		data:function(){
 			return {
-				timestamp:"",
-				timeInterval:"",//倒计时结束时间与当前时间的之间的间隔
-				timeIntervalVal: '', // 保存时间间隔的参数
 				sn:"",
 				openId:"",
-				orderNo:"",
 				//orderState:"",
-				timeContent:""
+				timeContent:"",/*,
+				createTime:""*/
+				lasttime:0,
+				intervalTime:0,//时间校验变量，
+				current:false	
 			}
 		},
-
+		computed:{
+			orderNo:function(){
+				return this.$route.params.orderNo
+			},
+			createTime:function(){
+				return this.$route.params.createTime
+			}/*,
+			leftTime:function(){
+				return this.$route.params.leftTime
+			}*/
+		},
 		methods:{
+			init:function(){
+				this.lasttime = this.$route.params.leftTime/*50000000*/;				
+				this.loopTimer();
+				this.loopAsk();
+			},
 			renew:function(){
+				console.log(this.$route.query.openId)
 				this.$router.push({
-	            	name:"router3",
+	            	name:"router4",
 	            	query:{
-	                	sn:this.$route.params.sn,
-	                	openId:this.$route.params.openId
+	                	sn:this.$route.query.sn,
+	                	openId:decodeURIComponent(this.$route.query.openId)
+	            	},
+	            	params:{
+	            		increase:true
 	            	}
 	            });
             },
-            /*orderstate:function(sn,openId){
-            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
-					console.log(response.data)
-					this.orderNo = response.data.data.orderNo;
-					//this.orderState = response.data.data.orderStatus;
-					//this.stateJudge(response.data.data.orderStatus)
-				})
+           /* countdown:function(){
+               var that = this;	
+               var leftTimer = function(){
+	               	var leftTime = 1513733983914;			
+	               	var hours = parseInt(leftTime / 1000 / 60 / 60 % 24 , 10); //计算剩余的小时 
+	               	var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟 
+	               	var seconds = parseInt(leftTime / 1000 % 60, 10);//计算剩余的秒数 
+	               	
+	               	hours = that.checkTime(hours); 
+	               	minutes = that.checkTime(minutes); 
+	               	seconds = that.checkTime(seconds); 
+	               	setInterval("leftTimer("+leftTime+")",1000); 
+	               	that.timeContent =  hours+":"+ minutes+":"+seconds;
+               }
+
+            },*/
+            loopTimer:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.showTimer();
+            		that.lasttime= that.lasttime-1000;
+            	},1000); 
             },
-			orderstate_ask:function(sn,openId){
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+sn+"&openId="+openId).then(function(response){
-					//this.orderState = response.data.data.orderStatus;
-					//this.stateJudge(response.data.data.orderStatus);
-					console.log(response.data.data.orderStatus)
-				})
-			},*/
-			countDown:function(){
-				timestamp = $this.$route.params.leftTime;
-				var self = this;
-				var timer = setInterval(handle,1000);
-		       		        
-				var handle = function(){
-					var self = this;
-					var nowTime = new Date();
-			        var endTime = new Date(timestamp * 1000);
-			        var t = endTime.getTime() - nowTime.getTime();
-			        if(t>0){
-			         // var day = Math.floor(t/86400000);
-			          var hour=Math.floor((t/3600000)%24);
-			          var min=Math.floor((t/60000)%60);
-			          var sec=Math.floor((t/1000)%60);
-			          hour = hour < 10 ? "0" + hour : hour;
-			          min = min < 10 ? "0" + min :min;
-			          sec = sec < 10 ? "0" + sec: sec;
-			          var format = '';
-			          
-			          if( hour > 0 ){
-			            format = hour+"小时"+min+"分"+sec+"秒"; 
-			          }
-			          if(day <= 0 && hour <= 0){
-			            format =min+"分"+sec+"秒";
-			          }
-			          self.timeContent = format;
-			          console.log(self.timeContent)
-			          }else{
-				           clearInterval(timer);
-				           /*self.timeContent = self.endText;
-				           self.timeContent = self.endText;*/
-				           //self._callback();
-				          }
-				    }      
-			},		
-			/*handleHref:function(){
-			
-				var href = location.href.split("?");
-				var condition = href.slice(1,href.length);
+            showTimer:function(){
+            	var leftTime = this.lasttime;
 
-				var cond = condition[0].split("&");
-				console.log(cond)
+               	if(leftTime>0){
+               		//console.log(leftTime);
+               		var hours = parseInt(leftTime / 1000 / 60 / 60  , 10); //计算剩余的小时 
+	               	var minutes = parseInt(leftTime / 1000 / 60 % 60, 10);//计算剩余的分钟 
+	               	var seconds = parseInt(leftTime / 1000 %60,10);//计算剩余的秒数 
+	               	hours = this.checkTime(hours); 
+	               	minutes = this.checkTime(minutes); 
+	               	seconds = this.checkTime(seconds); 
+	               	this.timeContent =  hours+":"+ minutes+":"+seconds;
+               	}else{
+               		this.timeContent =  "00:00:00";
+               	}			
+               	
+            },
+            ask_leftTime :function(){
+            	var  that = this;
+            	this.intervalTime = this.lasttime;
+            	console.log(this.$route.params.handleOpenId,this.$route.params.openId) 
+            	// var openId = this.$route.params.handleOpenId ||this.$route.params.openId
+            	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.$route.params.handleOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		//console.log(that.intervalTime)
+            	});
 
-				var arr = [];	
-				for(var i=0;i<cond.length;i++){
-					var name = cond[i].split("=")[0];
-					var value = cond[i].split("=")[1];
-					arr.push(value)					
-				}
-				return arr;					
-			},
-			decode:function(input){
-		         // private property
-		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-		 
-		        var output = "";
-		        var chr1, chr2, chr3;
-		        var enc1, enc2, enc3, enc4;
-		        var i = 0;
-		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-		        while (i < input.length) {
-		            enc1 = _keyStr.indexOf(input.charAt(i++));
-		            enc2 = _keyStr.indexOf(input.charAt(i++));
-		            enc3 = _keyStr.indexOf(input.charAt(i++));
-		            enc4 = _keyStr.indexOf(input.charAt(i++));
-		            chr1 = (enc1 << 2) | (enc2 >> 4);
-		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-		            chr3 = ((enc3 & 3) << 6) | enc4;
-		            output = output + String.fromCharCode(chr1);
-		            if (enc3 != 64) {
-		                output = output + String.fromCharCode(chr2);
-		            }
-		            if (enc4 != 64) {
-		                output = output + String.fromCharCode(chr3);
-		            }
-		        }
-		        output = this._utf8_decode(output);
-		        return output;
-
-		    },
-		    _utf8_decode:function(utftext){
-		      var string = "";
-		        var i = 0;
-		        var c = c1 = c2 = 0;
-		        while ( i < utftext.length ) {
-		            c = utftext.charCodeAt(i);
-		            if (c < 128) {
-		                string += String.fromCharCode(c);
-		                i++;
-		            } else if((c > 191) && (c < 224)) {
-		                c2 = utftext.charCodeAt(i+1);
-		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-		                i += 2;
-		            } else {
-		                c2 = utftext.charCodeAt(i+1);
-		                c3 = utftext.charCodeAt(i+2);
-		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-		                i += 3;
-		            }
-		        }
-		        return string;
-
-			}*/
-		},	
+            },
+            loopAsk:function(){
+            	var that = this;
+            	setInterval(function(){
+            		that.ask_leftTime();
+            		console.log(that.intervalTime,that.lasttime)
+            		
+            		that.lasttime = that.intervalTime;
+            		
+            	},60000);
+            },	
+			checkTime:function(i){
+				if(i<10) 
+				{ 
+				 i = "0" + i; 
+				} 
+				return i; 
+			}			
+		},
+		/*watch:{
+	        $route:"init"{
+	          handler:function(val,oldVal){
+	          	console.log(val,oldVal)
+	          	this.init();
+	          	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.$route.params.handleOpenId).then(function(response){
+            		that.intervalTime = response.data.data.leftTime;
+            		that.current = response.data.data.current;
+            		//console.log(that.intervalTime)
+            	});
+	          },
+	          deep:true
+	        }
+      	},	*/
 		created:function(){
-			//this.sn=$this.$route.params.sn;
 			
-			/*var arr = this.handleHref();
-			this.sn = arr[0];
-			this.openId = this.decode(decodeURIComponent(arr[1]));*/
-			//setInterval(this.orderstate_ask(this.sn,this.openId),5000)
-			//this.orderstate(this.sn,this.openId);
-
-			//this.countDown(6000);
+			this.init();
 
 		}
 	}

@@ -29,7 +29,7 @@
 		</ul>
 		<p>选择：{{modalSelected}}<span v-show="linum==1">{{expenseType}}小时</span></p>
 		<div class="state-pay">		
-			<div id="pay"  v-bind:class="[$store.state.status==0?'active':'']" @click="createOrder()">
+			<div id="pay"  v-bind:class="[$store.state.status==0||this.$route.params.increase?'active':'']" @click="createOrder()">
 				<a class="cart">立即支付</a>
 			</div>
 		</div>
@@ -82,13 +82,13 @@
 			},
 			createOrder:function(){
 				var that = this;
-				console.log(this.sn,this.openId)
+				console.log("modal---"+this.sn,this.openId)
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
 						"sn":/*'0095699FA99C'*/that.sn,
-						"openId":that.openId,
+						"openId":that.decode(decodeURIComponent(that.openId)),
 						"type":that.type,
-						"increase":that.increase}
+						"increase":(this.$route.params.increase)?true:that.increase}
 					}).then(function(response){
 						
 						if(response.data.status ==10000){
@@ -177,6 +177,50 @@
 				}
 				return arr;					
 			},
+			encode :function (input) {
+			        var output = "";
+			        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+			        var i = 0;
+			        input = _utf8_encode(input);
+			        while (i < input.length) {
+			            chr1 = input.charCodeAt(i++);
+			            chr2 = input.charCodeAt(i++);
+			            chr3 = input.charCodeAt(i++);
+			            enc1 = chr1 >> 2;
+			            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			            enc4 = chr3 & 63;
+			            if (isNaN(chr2)) {
+			                enc3 = enc4 = 64;
+			            } else if (isNaN(chr3)) {
+			                enc4 = 64;
+			            }
+			            output = output +
+			            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
+			            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+			        }
+			        return output;
+			},
+			_utf8_encode:function (string) {
+			      string = string.replace(/\r\n/g,"\n");
+			      var utftext = "";
+			      for (var n = 0; n < string.length; n++) {
+			          var c = string.charCodeAt(n);
+			          if (c < 128) {
+			              utftext += String.fromCharCode(c);
+			          } else if((c > 127) && (c < 2048)) {
+			              utftext += String.fromCharCode((c >> 6) | 192);
+			              utftext += String.fromCharCode((c & 63) | 128);
+			          } else {
+			              utftext += String.fromCharCode((c >> 12) | 224);
+			              utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+			              utftext += String.fromCharCode((c & 63) | 128);
+			          }
+			
+			      }
+			      return utftext;
+			  },
+
 			decode:function(input){
 		         // private property
 		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -234,7 +278,7 @@
 			//this.createUid();
 			var arr = this.handleHref();
 			this.sn = arr[0];
-			this.openId = this.decode(decodeURIComponent(arr[1]));
+			this.openId = arr[1];
 			console.log("moal---"+ this.openId)
 		}
 

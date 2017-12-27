@@ -23,38 +23,36 @@ var header = require ("../js/components/header.vue");
 var footer = require ("../js/components/footer.vue");
 var model = require ("../js/components/model.vue");
 var order = require ("../js/components/order.vue");
+var newOrder = require ("../js/components/newOrder.vue");
 var state = require ("../js/components/state.vue");
 var statebefore = require ("../js/components/statebefore.vue");
 /*创建路由*/
 var router = new VueRouter({
   routes:[
-    {path:'/',component:model},
-    {path:'/state',component:state},
-    {path:'/order',component:order},
+    // {path:'/',component:model},
+    // {path:'/state',component:state},
+    // {path:'/order',component:order},
+    // {path:'/statebefore',component:statebefore},
+    // {name:"router1",path:"/",component:state},
+    // // {name:"router2",path:"/",component:order},
+    // {name:"router2",path:"/",component:statebefore},
+    // {name:"router3",path:"/statebefore",component:order},
+    // {name:"router4",path:"/order",component:model}
+    {name:"router4",path:'/',component:model,/*redirect:"/home",
+     subRoutes:{
+        "/home/order":{
+          name:"router5",
+          component:order
+        }
+      }*/
+    },
     {path:'/statebefore',component:statebefore},
-    {name:"router1",path:"/",component:state},
-    {name:"router2",path:"/",component:order},
-    {name:"router3",path:"/order",component:model},
-    {name:"router4",path:"/order",component:statebefore}
+    {name:"router3",path:'/order',component:order},
+    {name:"router1",path:"/state",component:state},
+    {name:"router2",path:"/",component:state},
+    {name:"router5",path:"/newOrder",component:newOrder}
   ]
 })
-
-
-// new Vue({
-//   components: {
-//       'my-header':header,
-//       'my-footer': footer,
-//   },
-            
-//   router
-// }).$mount('#app');
-// Vue.component('my-header',{
-//   props:['message'],
-//   template:header
-//   // data:function(){
-//   //   return {testdata : this.message}
-//   // }
-// })
 
 var store = new Vuex.Store({
   state: {
@@ -94,10 +92,26 @@ var test = new Vue({
     },
     sn:"",
     url:"",
-    imgSrc:""
+    imgSrc:"",
+    openId:"",
+    encodeOenId:""
   },
+  /*watch:{
+    router:"init"{
+      handler:function(val,oldVal){
+        console.log(val,oldVal)
+        this.initIndex();
+      },
+      deep:true
+    }
+  },  */
   created:function(){
-        var that =this;
+        this.initIndex();
+           
+  },
+  methods:{
+    initIndex:function(){
+      var that =this;
         var returnFlag = this.handleHref();
         if(returnFlag){
           this.sendRquest();
@@ -105,13 +119,11 @@ var test = new Vue({
           this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
             window.location = response.data.data.url;
             this.handleHref();
+            this.handleStateRouter(response.data.unifyStatus);
           })
           
        }
-           
-  },
-  
-  methods:{
+    },
     handleHref:function(){
       
         var arr = [];
@@ -136,7 +148,7 @@ var test = new Vue({
           }
           this.sn = arr[0];
          
-          
+          this.encodeOenId = arr[1];
           this.openId = this.decode(decodeURIComponent(arr[1]));
           
           console.log("index-----"+this.openId)
@@ -147,6 +159,40 @@ var test = new Vue({
           return false;                   
         }
                        
+    },
+    handleStateRouter:function(unifyStatus){
+        /*switch(unifyStatus){
+            case -1:*/
+            console.log(unifyStatus)
+            if(unifyStatus!==0 && unifyStatus!==(-2)){
+              this.$router.push({
+                    name:'router1',
+                    params:{
+                        sn:this.sn,
+                        status:response.data.unifyStatus
+                    }
+                });
+              
+            }
+
+            if(unifyStatus==(-2)){
+              this.$router.push({
+                    name:'router5',
+                    query:{
+                      sn:this.sn,
+                      openId:decodeURIComponent(this.openId)
+                    },
+                    params:{
+                        sn:this.sn,
+                        status:response.data.unifyStatus,
+                        handleOpenId:this.openId
+                    }
+                });
+            
+            }
+                
+            /*break;*/    
+       
     },
     decode:function(input){
          // private property
@@ -210,15 +256,35 @@ var test = new Vue({
                 store.commit('calstatus',response.data.data.unifyStatus);
                 store.commit('calmodel',response.data.data.modeList);
 
-                switch(response.data.data.unifyStatus){
-                  case -1:
+                if(response.data.data.unifyStatus !=0 && response.data.data.unifyStatus!==-2){
+                 
                     this.$router.push({
                         name:'router1',
-                        params:{
+                        query:{
                           sn:this.sn,
-                          status:response.data.data.unifyStatus
+                          openId:this.encodeOenId
+                        },
+                        params:{
+                          status:response.data.data.unifyStatus,
+                          openId:this.openId
                         }
                     })        
+                }
+
+                if(response.data.data.unifyStatus==(-2)){
+                  console.log(this.encodeOenId,this.openId)
+                  this.$router.push({
+                        name:'router5',
+                        query:{
+                          sn:this.sn,
+                          openId:this.encodeOenId
+                        },
+                        params:{
+                            status:response.data.data.unifyStatus,
+                            handleOpenId:this.openId
+                        }
+                    });
+                
                 }
 
               }else{
