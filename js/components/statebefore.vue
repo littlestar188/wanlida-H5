@@ -60,11 +60,11 @@
 		},
 		methods:{ 
 			ready:function(){
-				var arr = this.handleHref();
+				var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 				this.sn = arr[0];
 				this.openId = arr[1];
 
-				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
+				this.handleOpenId = this.$emit("refreshURIcode",decodeURIComponent(this.openId))/*this.decode(decodeURIComponent(this.openId))*/;
 				console.log("statebefore----ready"+this.openId,this.handleOpenId)
 				this.orderstatek();
 				
@@ -148,7 +148,7 @@
 
                 }
 
-			},
+			}/*,
 			handleHref:function(){
 			
 				var href = location.href.split("?");
@@ -164,8 +164,8 @@
 					arr.push(value)					
 				}
 				return arr;					
-			},
-			decode:function(input){
+			},*/
+			/*decode:function(input){
 		         // private property
 		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 		 
@@ -216,11 +216,11 @@
 		        }
 		        return string;
 
-			}
+			}*/
 		},	
 		created:function(){
 			
-			var arr = this.handleHref();
+			var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 			this.openId = arr[1];
 			console.log(this.openId)
 			this.ready();

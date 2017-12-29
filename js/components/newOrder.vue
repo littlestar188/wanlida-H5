@@ -82,10 +82,15 @@
 		methods:{
 			init:function(){
 				// this.lasttime = this.$route.params.leftTime/*50000000*/;
-				console.log(this.$route.params.handleOpenId)
-				var arr = this.handleHref();
+				console.log("neworder params handle openId----"+this.$route.params.handleOpenId)
+				
+				var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 				this.openId = arr[1];
-				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+				console.log(this.$parent)
+				console.log(this.$emit("refreshURIcode"))
+				console.log("neworder params decode openId----"+this.$emit("refreshURIcode",decodeURIComponent(this.openId)))
+				/*第一次扫码从首页进入或当前页面刷新 获取openId*/
+				this.getOpenId = this.$route.params.handleOpenId||this.$emit("refreshURIcode",decodeURIComponent(this.openId))/*this.decode(decodeURIComponent(this.openId))*/;
 				var that= this;
             	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
             		that.intervalTime = response.data.data.leftTime;
@@ -99,7 +104,7 @@
 				this.loopAsk();
 			},
 			renew:function(){
-				console.log(this.$route.query.openId)
+				//console.log(this.$route.query.openId)
 				if(this.current){
 					this.$router.push({
 		            	name:"router4",
@@ -142,10 +147,10 @@
             ask_leftTime :function(){
             	var  that = this;
             	this.intervalTime = this.lasttime;
-            	console.log(this.$route.params.handleOpenId,this.$route.params.openId,this.getOpenId) 
-            	var arr = this.handleHref();
-				this.openId = arr[1];
-				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+    //         	console.log(this.$route.params.handleOpenId,this.$route.params.openId,this.getOpenId) 
+    //         	var arr = this.handleHref();
+				// this.openId = arr[1];
+				// this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
             	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
             		that.intervalTime = response.data.data.leftTime;
             		that.current = response.data.data.current;
@@ -169,7 +174,7 @@
 				 i = "0" + i; 
 				} 
 				return i; 
-			},
+			}/*,
 			handleHref:function(){
 				
 				var href = location.href.split("?");
@@ -185,7 +190,7 @@
 					arr.push(value)					
 				}
 				return arr;					
-			},
+			}*//*,
 			decode:function(input){
 		         // private property
 		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -236,10 +241,10 @@
 		            }
 		        }
 		        return string;
-		    }	
+		    }	*/
 		},
 		reload:function(){
-			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.decode(decodeURIComponent(this.openId)));
+			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.$emit("refreshURIcode",decodeURIComponent(this.openId)));
 		},
 		created:function(){
 			

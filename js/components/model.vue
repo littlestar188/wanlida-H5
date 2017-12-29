@@ -86,7 +86,7 @@
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
 						"sn":/*'0095699FA99C'*/that.sn,
-						"openId":that.decode(decodeURIComponent(that.openId)),
+						"openId":this.$emit("refreshURIcode",decodeURIComponent(that.openId))/*that.decode(decodeURIComponent(that.openId))*/,
 						"type":that.type,
 						"increase":(this.$route.params.increase)?true:that.increase}
 					}).then(function(response){
@@ -160,7 +160,7 @@
            			 } // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
 			    });  
 			
-			},
+			}/*,
 			handleHref:function(){
 				
 				var href = location.href.split("?");
@@ -176,7 +176,7 @@
 					arr.push(value)					
 				}
 				return arr;					
-			},
+			}*//*,
 			encode :function (input) {
 			        var output = "";
 			        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
@@ -271,12 +271,12 @@
 		            }
 		        }
 		        return string;
-		    }
+		    }*/
 
 		},
 		created:function(){
 			//this.createUid();
-			var arr = this.handleHref();
+			var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 			this.sn = arr[0];
 			this.openId = arr[1];
 			console.log("moal---"+ this.openId)

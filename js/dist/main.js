@@ -9362,6 +9362,21 @@ var test = new Vue({
         }
                        
     },
+    handleHrefPart:function(){
+      var href = location.href.split("?");
+        var condition = href.slice(1,href.length);
+
+        var cond = condition[0].split("&");
+        console.log(cond)
+
+        var arr = []; 
+        for(var i=0;i<cond.length;i++){
+          var name = cond[i].split("=")[0];
+          var value = cond[i].split("=")[1];
+          arr.push(value)         
+        }
+        return arr; 
+    },
     handleStateRouter:function(unifyStatus){
         /*switch(unifyStatus){
             case -1:*/
@@ -9388,7 +9403,7 @@ var test = new Vue({
                     name:'router5',
                     query:{
                       sn:this.sn,
-                      openId:decodeURIComponent(this.openId)
+                      openId:decodeURIComponent(this.encodeOenId)
                     },
                     params:{
                         sn:this.sn,
@@ -9404,6 +9419,7 @@ var test = new Vue({
     },
     decode:function(input){
          // private property
+         console.log("parent component ----" +input)
       _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
  
       var output = "";
@@ -9455,6 +9471,7 @@ var test = new Vue({
     },
     sendRquest:function(){
        //wanlida/test.json
+      var that = this; 
       this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
               if(response.data.status==10000){
                 test.data1 = response.data.data;
@@ -9463,7 +9480,7 @@ var test = new Vue({
                 store.commit('calexpense',response.data.expensesList);*/  
                 store.commit('calstatus',response.data.data.unifyStatus);
                 store.commit('calmodel',response.data.data.modeList);
-
+/*
                 if(response.data.data.unifyStatus !=0 && response.data.data.unifyStatus!==-2){
                  
                     this.$router.push({
@@ -9493,8 +9510,8 @@ var test = new Vue({
                         }
                     });
                 
-                }
-                //that.handleStateRouter(response.data.data.unifyStatus);
+                }*/
+               that.handleStateRouter(response.data.data.unifyStatus);
 
               }else{
                 alert("请求失败");
@@ -26314,7 +26331,7 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 				this.$http.post("https://wanlida-test.yunext.com/external/getOrder",{},{headers:{'Content-Type': 'application/x-www-form-urlencoded'},
 				 params:{
 						"sn":/*'0095699FA99C'*/that.sn,
-						"openId":that.decode(decodeURIComponent(that.openId)),
+						"openId":this.$emit("refreshURIcode",decodeURIComponent(that.openId))/*that.decode(decodeURIComponent(that.openId))*/,
 						"type":that.type,
 						"increase":(this.$route.params.increase)?true:that.increase}
 					}).then(function(response){
@@ -26388,7 +26405,7 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
            			 } // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
 			    });  
 			
-			},
+			}/*,
 			handleHref:function(){
 				
 				var href = location.href.split("?");
@@ -26404,7 +26421,7 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 					arr.push(value)					
 				}
 				return arr;					
-			},
+			}*//*,
 			encode :function (input) {
 			        var output = "";
 			        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
@@ -26499,12 +26516,12 @@ exports.push([module.i, "\n.modal-choice{\n\t\toverflow: hidden;\n\t\t/* padding
 		            }
 		        }
 		        return string;
-		    }
+		    }*/
 
 		},
 		created:function(){
 			//this.createUid();
-			var arr = this.handleHref();
+			var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 			this.sn = arr[0];
 			this.openId = arr[1];
 			console.log("moal---"+ this.openId)
@@ -27124,10 +27141,15 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 		methods:{
 			init:function(){
 				// this.lasttime = this.$route.params.leftTime/*50000000*/;
-				console.log(this.$route.params.handleOpenId)
-				var arr = this.handleHref();
+				console.log("neworder params handle openId----"+this.$route.params.handleOpenId)
+				
+				var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 				this.openId = arr[1];
-				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+				console.log(this.$parent)
+				console.log(this.$emit("refreshURIcode"))
+				console.log("neworder params decode openId----"+this.$emit("refreshURIcode",decodeURIComponent(this.openId)))
+				/*第一次扫码从首页进入或当前页面刷新 获取openId*/
+				this.getOpenId = this.$route.params.handleOpenId||this.$emit("refreshURIcode",decodeURIComponent(this.openId))/*this.decode(decodeURIComponent(this.openId))*/;
 				var that= this;
             	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
             		that.intervalTime = response.data.data.leftTime;
@@ -27141,7 +27163,7 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 				this.loopAsk();
 			},
 			renew:function(){
-				console.log(this.$route.query.openId)
+				//console.log(this.$route.query.openId)
 				if(this.current){
 					this.$router.push({
 		            	name:"router4",
@@ -27184,10 +27206,10 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
             ask_leftTime :function(){
             	var  that = this;
             	this.intervalTime = this.lasttime;
-            	console.log(this.$route.params.handleOpenId,this.$route.params.openId,this.getOpenId) 
-            	var arr = this.handleHref();
-				this.openId = arr[1];
-				this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
+    //         	console.log(this.$route.params.handleOpenId,this.$route.params.openId,this.getOpenId) 
+    //         	var arr = this.handleHref();
+				// this.openId = arr[1];
+				// this.getOpenId = this.$route.params.handleOpenId||this.decode(decodeURIComponent(this.openId));
             	this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.$route.query.sn+"&openId="+this.getOpenId).then(function(response){
             		that.intervalTime = response.data.data.leftTime;
             		that.current = response.data.data.current;
@@ -27211,7 +27233,7 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 				 i = "0" + i; 
 				} 
 				return i; 
-			},
+			}/*,
 			handleHref:function(){
 				
 				var href = location.href.split("?");
@@ -27227,7 +27249,7 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 					arr.push(value)					
 				}
 				return arr;					
-			},
+			}*//*,
 			decode:function(input){
 		         // private property
 		     	 _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -27278,10 +27300,10 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 		            }
 		        }
 		        return string;
-		    }	
+		    }	*/
 		},
 		reload:function(){
-			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.decode(decodeURIComponent(this.openId)));
+			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.$emit("refreshURIcode",decodeURIComponent(this.openId)));
 		},
 		created:function(){
 			
@@ -27558,7 +27580,7 @@ module.exports = {
 			// this.url = "#/?sn="+this.sn;
 			this.status = this.$route.params.status;
 			console.log(/*this.sn,*/this.status)
-		},
+		}/*,
 		handleHref:function(){
 		
 			var href = location.href.split("?");
@@ -27574,11 +27596,11 @@ module.exports = {
 				arr.push(value)					
 			}
 			return arr;					
-		}
+		}*/
 	},
 	reload:function(){},
 	created:function(){
-		var arr = this.handleHref();
+		var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 		this.openId = arr[1];
 		this.ready();
 
@@ -27760,11 +27782,11 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 		},
 		methods:{ 
 			ready:function(){
-				var arr = this.handleHref();
+				var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 				this.sn = arr[0];
 				this.openId = arr[1];
 
-				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
+				this.handleOpenId = this.$emit("refreshURIcode",decodeURIComponent(this.openId))/*this.decode(decodeURIComponent(this.openId))*/;
 				console.log("statebefore----ready"+this.openId,this.handleOpenId)
 				this.orderstatek();
 				
@@ -27848,7 +27870,7 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 
                 }
 
-			},
+			}/*,
 			handleHref:function(){
 			
 				var href = location.href.split("?");
@@ -27864,8 +27886,8 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 					arr.push(value)					
 				}
 				return arr;					
-			},
-			decode:function(input){
+			},*/
+			/*decode:function(input){
 		         // private property
 		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 		 
@@ -27916,11 +27938,11 @@ exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpaddi
 		        }
 		        return string;
 
-			}
+			}*/
 		},	
 		created:function(){
 			
-			var arr = this.handleHref();
+			var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 			this.openId = arr[1];
 			console.log(this.openId)
 			this.ready();

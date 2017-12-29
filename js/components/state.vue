@@ -115,7 +115,7 @@
 				// this.url = "#/?sn="+this.sn;
 				this.status = this.$route.params.status;
 				console.log(/*this.sn,*/this.status)
-			},
+			}/*,
 			handleHref:function(){
 			
 				var href = location.href.split("?");
@@ -131,11 +131,11 @@
 					arr.push(value)					
 				}
 				return arr;					
-			}
+			}*/
 		},
 		reload:function(){},
 		created:function(){
-			var arr = this.handleHref();
+			var arr = this.$emit("reHandleHrefPart")/*this.handleHref()*/;
 			this.openId = arr[1];
 			this.ready();
 

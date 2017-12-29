@@ -160,6 +160,21 @@ var test = new Vue({
         }
                        
     },
+    handleHrefPart:function(){
+      var href = location.href.split("?");
+        var condition = href.slice(1,href.length);
+
+        var cond = condition[0].split("&");
+        console.log(cond)
+
+        var arr = []; 
+        for(var i=0;i<cond.length;i++){
+          var name = cond[i].split("=")[0];
+          var value = cond[i].split("=")[1];
+          arr.push(value)         
+        }
+        return arr; 
+    },
     handleStateRouter:function(unifyStatus){
         /*switch(unifyStatus){
             case -1:*/
@@ -186,7 +201,7 @@ var test = new Vue({
                     name:'router5',
                     query:{
                       sn:this.sn,
-                      openId:decodeURIComponent(this.openId)
+                      openId:decodeURIComponent(this.encodeOenId)
                     },
                     params:{
                         sn:this.sn,
@@ -202,6 +217,7 @@ var test = new Vue({
     },
     decode:function(input){
          // private property
+         console.log("parent component ----" +input)
       _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
  
       var output = "";
@@ -253,6 +269,7 @@ var test = new Vue({
     },
     sendRquest:function(){
        //wanlida/test.json
+      var that = this; 
       this.$http.get("https://wanlida-test.yunext.com/external/getDeviceDetail?sn="+this.sn).then(function(response){
               if(response.data.status==10000){
                 test.data1 = response.data.data;
@@ -261,7 +278,7 @@ var test = new Vue({
                 store.commit('calexpense',response.data.expensesList);*/  
                 store.commit('calstatus',response.data.data.unifyStatus);
                 store.commit('calmodel',response.data.data.modeList);
-
+/*
                 if(response.data.data.unifyStatus !=0 && response.data.data.unifyStatus!==-2){
                  
                     this.$router.push({
@@ -291,8 +308,8 @@ var test = new Vue({
                         }
                     });
                 
-                }
-                //that.handleStateRouter(response.data.data.unifyStatus);
+                }*/
+               that.handleStateRouter(response.data.data.unifyStatus);
 
               }else{
                 alert("请求失败");

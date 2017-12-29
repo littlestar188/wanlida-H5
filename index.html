@@ -10,7 +10,7 @@
 <body>
 	<div id="app">
 		<my-header :message.sync="data1" ></my-header>		
-		<router-view></router-view>
+		<router-view v-on:refreshURIcode="decode" v-on:reHandleHrefPart="handleHrefPart"></router-view>
 	</div>
 
 	<script src="js/dist/main.js"></script>
