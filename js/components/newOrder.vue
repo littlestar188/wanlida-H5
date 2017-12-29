@@ -238,6 +238,9 @@
 		        return string;
 		    }	
 		},
+		reload:function(){
+			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.decode(decodeURIComponent(this.openId)));
+		},
 		created:function(){
 			
 			this.init();

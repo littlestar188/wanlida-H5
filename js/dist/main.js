@@ -9225,9 +9225,9 @@ var header = __webpack_require__ (17);
 var footer = __webpack_require__ (23);
 var model = __webpack_require__ (25);
 var order = __webpack_require__ (30);
-var newOrder = __webpack_require__ (45);
-var state = __webpack_require__ (35);
-var statebefore = __webpack_require__ (40);
+var newOrder = __webpack_require__ (35);
+var state = __webpack_require__ (40);
+var statebefore = __webpack_require__ (45);
 /*创建路由*/
 var router = new VueRouter({
   routes:[
@@ -9369,15 +9369,21 @@ var test = new Vue({
             if(unifyStatus!==0 && unifyStatus!==(-2)){
               this.$router.push({
                     name:'router1',
+                    query:{
+                          sn:this.sn,
+                          openId:decodeURIComponent(this.encodeOenId)
+                        },
                     params:{
                         sn:this.sn,
-                        status:response.data.unifyStatus
+                        status:unifyStatus,
+                        openId:this.openId
                     }
                 });
               
             }
 
             if(unifyStatus==(-2)){
+              console.log("-2-----openId"+this.openId)
               this.$router.push({
                     name:'router5',
                     query:{
@@ -9386,7 +9392,7 @@ var test = new Vue({
                     },
                     params:{
                         sn:this.sn,
-                        status:response.data.unifyStatus,
+                        status:unifyStatus,
                         handleOpenId:this.openId
                     }
                 });
@@ -9464,7 +9470,7 @@ var test = new Vue({
                         name:'router1',
                         query:{
                           sn:this.sn,
-                          openId:this.encodeOenId
+                          openId:decodeURIComponent(this.encodeOenId)
                         },
                         params:{
                           status:response.data.data.unifyStatus,
@@ -9479,7 +9485,7 @@ var test = new Vue({
                         name:'router5',
                         query:{
                           sn:this.sn,
-                          openId:this.encodeOenId
+                          openId:decodeURIComponent(this.encodeOenId)
                         },
                         params:{
                             status:response.data.data.unifyStatus,
@@ -9488,6 +9494,7 @@ var test = new Vue({
                     });
                 
                 }
+                //that.handleStateRouter(response.data.data.unifyStatus);
 
               }else{
                 alert("请求失败");
@@ -9506,60 +9513,6 @@ var test = new Vue({
   },
   router
 }).$mount('#app');
-
-/*var publicFunction = {
-   decode:function(input){
-         // private property
-      _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
- 
-      var output = "";
-        var chr1, chr2, chr3;
-        var enc1, enc2, enc3, enc4;
-        var i = 0;
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-        while (i < input.length) {
-            enc1 = _keyStr.indexOf(input.charAt(i++));
-            enc2 = _keyStr.indexOf(input.charAt(i++));
-            enc3 = _keyStr.indexOf(input.charAt(i++));
-            enc4 = _keyStr.indexOf(input.charAt(i++));
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-            output = output + String.fromCharCode(chr1);
-            if (enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            if (enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-        }
-        output = this._utf8_decode(output);
-        return output;
-
-    },
-    _utf8_decode:function(utftext){
-      var string = "";
-        var i = 0;
-        var c = c1 = c2 = 0;
-        while ( i < utftext.length ) {
-            c = utftext.charCodeAt(i);
-            if (c < 128) {
-                string += String.fromCharCode(c);
-                i++;
-            } else if((c > 191) && (c < 224)) {
-                c2 = utftext.charCodeAt(i+1);
-                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-                i += 2;
-            } else {
-                c2 = utftext.charCodeAt(i+1);
-                c3 = utftext.charCodeAt(i+2);
-                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-                i += 3;
-            }
-        }
-        return string;
-    }
-  }  */
 
 /***/ }),
 /* 7 */
@@ -27023,608 +26976,6 @@ var Component = __webpack_require__(0)(
   /* cssModules */
   null
 )
-Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\state.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] state.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4f000e82", Component.options)
-  } else {
-    hotAPI.reload("data-v-4f000e82", Component.options)
-  }
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(37);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("7e86157a", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports) {
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-module.exports = {
-	data:function(){
-		return {
-			imageStatus:"",
-			status:0,
-			url:"",
-			openId:"",
-			errorContent:""
-		}
-	},
-	computed:{
-		imageClass:function(){
-			switch(this.$route.params.status){
-				case -2:
-					this.imageStatus = "used";
-					this.errorContent="设备已经被使用";
-					break;
-				case -1:
-					this.imageStatus = "repair";
-					this.errorContent="设备离线";
-					break;
-				case 0	:
-					this.$router.push({
-	                    name:'router2',
-	                    query:{
-	                    	sn:this.sn,
-                      		openId:decodeURIComponent(this.openId)
-	                    },
-	                    params:{
-	                        sn:this.sn,
-	                        status:response.data.unifyStatus
-	                    }
-	                });
-					break;
-				default:
-					this.imageStatus = "error";
-					this.errorContent="设备故障";
-					break;		
-
-			}
-			return this.imageStatus
-		}
-	},
-	methods:{
-		ready:function(){
-			// this.sn = this.$route..sn;
-			// this.url = "#/?sn="+this.sn;
-			this.status = this.$route.params.status;
-			console.log(/*this.sn,*/this.status)
-		},
-		handleHref:function(){
-		
-			var href = location.href.split("?");
-			var condition = href.slice(1,href.length);
-
-			var cond = condition[0].split("&");
-			console.log(cond)
-
-			var arr = [];	
-			for(var i=0;i<cond.length;i++){
-				var name = cond[i].split("=")[0];
-				var value = cond[i].split("=")[1];
-				arr.push(value)					
-			}
-			return arr;					
-		}
-	},
-	reload:function(){},
-	created:function(){
-		var arr = this.handleHref();
-		this.openId = arr[1];
-		this.ready();
-
-	}
-}
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('div', {
-    staticClass: "state-content"
-  }, [_c('div', {
-    staticClass: "imgwrapper",
-    class: _vm.imageClass
-  }), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.errorContent))])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _vm._m(0)])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "state-pay"
-  }, [_c('div', {
-    attrs: {
-      "id": "pay"
-    }
-  }, [_c('a', {
-    staticClass: "cart"
-  }, [_vm._v("立即支付")])])])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-4f000e82", module.exports)
-  }
-}
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-__webpack_require__(41)
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(43),
-  /* template */
-  __webpack_require__(44),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\statebefore.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] statebefore.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-47c6e77e", Component.options)
-  } else {
-    hotAPI.reload("data-v-47c6e77e", Component.options)
-  }
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(42);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("132d7a34", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue", function() {
-     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)();
-// imports
-
-
-// module
-exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports) {
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-	module.exports = {
-		data:function(){
-			return {
-				
-				statetext:"",
-				buttonText:"",
-				state:"",
-				leftTime:"",
-				createTime:"",
-				handleOpenId:"",
-				openId:""
-				/*time:{
-					type:function
-				}*/
-
-			}
-		},
-		methods:{ 
-			ready:function(){
-				var arr = this.handleHref();
-				this.sn = arr[0];
-				this.openId = arr[1];
-
-				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
-				console.log("statebefore----ready"+this.openId,this.handleOpenId)
-				this.orderstatek();
-				
-			},
-			timer:function(){
-				
-				var time = setInterval(this.orderstate_ask,2000);
-				if(this.state == 20){
-					this.statetext ="设备解锁成功"
-					clearInterval(time);
-				}else{
-					time;
-				}
-			},
-			orderstatek:function(){
-				var that = this;
-				console.log("orderstate ask----"+this.openId,this.handleOpenId)
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
-					//this.orderState = response.data.data.orderStatus;
-					that.leftTime = response.data.data.leftTime;
-					that.orderNo =  response.data.data.orderNo;
-					that.state = response.data.data.orderStatus;
-					that.createTime = response.data.data.createTime;
-					this.timer();
-					
-					console.log(response.data.data.orderStatus,that.state)
-				})
-			},      
-			orderstate_ask:function(){
-				var that = this;
-				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
-					//this.orderState = response.data.data.orderStatus;
-					that.leftTime = response.data.data.leftTime;
-					that.orderNo =  response.data.data.orderNo;
-					that.state = response.data.data.orderStatus;
-					that.createTime = response.data.data.createTime;
-					that.stateJudge(that.state);
-					console.log(response.data.data.orderStatus,that.state)
-				})
-			},
-			jump:function(){
-				//if(this.state == 20){
-					console.log("jump----"+this.openId,this.handleOpenId)
-					this.$router.push({
-	                   	name:'router3',
-	                    query:{
-	                      sn:this.sn,
-	                      openId:decodeURIComponent(this.openId)
-	                    },
-	                    params:{
-	                      orderNo:this.orderNo,		
-	                      leftTime:this.leftTime,
-	                      createTime:this.createTime,
-	                      handleOpenId:this.handleOpenId
-	                    }
-        			});
-
-				//}
-			},
-			stateJudge:function(value){
-
-				switch(value){
-                   case 0:
-	                   this.statetext ="等待支付结果...";
-	                   break;
-                   case 10:
-                  	     this.statetext ="支付成功,向设备发送命令中...";	              	    
-	                	break;
-	                case -10:
-	                    this.statetext ="支付失败,请返回重新下单";
-	                    //this.buttonText = "重新支付";
-	                   break;
-	                case -20:
-	                    this.statetext ="设备解锁失败";
-	                    //this.buttonText="申请退款";                    
-	                   break; 
-	                case 20:
-	                    this.statetext ="设备解锁成功";
-	                   // this.buttonText="确定";	                   	                    	                    
-	                   break;      
-
-                }
-
-			},
-			handleHref:function(){
-			
-				var href = location.href.split("?");
-				var condition = href.slice(1,href.length);
-
-				var cond = condition[0].split("&");
-				console.log(cond)
-
-				var arr = [];	
-				for(var i=0;i<cond.length;i++){
-					var name = cond[i].split("=")[0];
-					var value = cond[i].split("=")[1];
-					arr.push(value)					
-				}
-				return arr;					
-			},
-			decode:function(input){
-		         // private property
-		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-		 
-		        var output = "";
-		        var chr1, chr2, chr3;
-		        var enc1, enc2, enc3, enc4;
-		        var i = 0;
-		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-		        while (i < input.length) {
-		            enc1 = _keyStr.indexOf(input.charAt(i++));
-		            enc2 = _keyStr.indexOf(input.charAt(i++));
-		            enc3 = _keyStr.indexOf(input.charAt(i++));
-		            enc4 = _keyStr.indexOf(input.charAt(i++));
-		            chr1 = (enc1 << 2) | (enc2 >> 4);
-		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-		            chr3 = ((enc3 & 3) << 6) | enc4;
-		            output = output + String.fromCharCode(chr1);
-		            if (enc3 != 64) {
-		                output = output + String.fromCharCode(chr2);
-		            }
-		            if (enc4 != 64) {
-		                output = output + String.fromCharCode(chr3);
-		            }
-		        }
-		        output = this._utf8_decode(output);
-		        return output;
-
-		    },
-		    _utf8_decode:function(utftext){
-		      var string = "";
-		        var i = 0;
-		        var c = c1 = c2 = 0;
-		        while ( i < utftext.length ) {
-		            c = utftext.charCodeAt(i);
-		            if (c < 128) {
-		                string += String.fromCharCode(c);
-		                i++;
-		            } else if((c > 191) && (c < 224)) {
-		                c2 = utftext.charCodeAt(i+1);
-		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-		                i += 2;
-		            } else {
-		                c2 = utftext.charCodeAt(i+1);
-		                c3 = utftext.charCodeAt(i+2);
-		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-		                i += 3;
-		            }
-		        }
-		        return string;
-
-			}
-		},	
-		created:function(){
-			
-			var arr = this.handleHref();
-			this.openId = arr[1];
-			console.log(this.openId)
-			this.ready();
-
-
-		}
-	}
-
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('div', {
-    staticClass: "state-content"
-  }, [_c('p', [_vm._v(_vm._s(_vm.statetext))])]), _vm._v(" "), _c('div', {
-    staticClass: "state-pay"
-  }, [_c('div', {
-    class: [_vm.state == 20 ? 'active' : ''],
-    attrs: {
-      "id": "pay"
-    },
-    on: {
-      "click": function($event) {
-        _vm.jump()
-      }
-    }
-  }, [_c('a', {
-    staticClass: "cart"
-  }, [_vm._v("确定")])])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-47c6e77e", module.exports)
-  }
-}
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-__webpack_require__(46)
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(48),
-  /* template */
-  __webpack_require__(49),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
 Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\newOrder.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] newOrder.vue: functional components are not supported with templates, they should use render functions.")}
@@ -27646,13 +26997,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 46 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(47);
+var content = __webpack_require__(37);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -27672,7 +27023,7 @@ if(false) {
 }
 
 /***/ }),
-/* 47 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(1)();
@@ -27686,7 +27037,7 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 
 
 /***/ }),
-/* 48 */
+/* 38 */
 /***/ (function(module, exports) {
 
 //
@@ -27929,6 +27280,9 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 		        return string;
 		    }	
 		},
+		reload:function(){
+			this.getOpenId = decodeURIComponent(this.$route.params.handleOpenId)||decodeURIComponent(this.decode(decodeURIComponent(this.openId)));
+		},
 		created:function(){
 			
 			this.init();
@@ -27938,7 +27292,7 @@ exports.push([module.i, "\n.stateWrapper{\n\t\tbackground-color:#fff;\n\t\tpaddi
 
 
 /***/ }),
-/* 49 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -28002,6 +27356,608 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-567cbb50", module.exports)
+  }
+}
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(41)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(43),
+  /* template */
+  __webpack_require__(44),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\state.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] state.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4f000e82", Component.options)
+  } else {
+    hotAPI.reload("data-v-4f000e82", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(42);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("7e86157a", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-4f000e82!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./state.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n@media only screen and (-webkit-min-device-pixel-ratio:2),\n\tonly screen and (min--moz-device-pixel-ratio:2),\n\tonly screen and (-o-min-device-pixel-ratio:2/1),\n\tonly screen and (min-device-pixel-ratio:2){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@2x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio:3),\n\tonly screen and (min--moz-device-pixel-ratio:3),\n\tonly screen and (-o-min-device-pixel-ratio:3/1),\n\tonly screen and (min-device-pixel-ratio:3){\n.state-content .imgwrapper.error{\n\t\t\tbackground:url('/weixin/img/img_trouble@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\t\tbackground:url('/weixin/img/img_maintain@3x.png') no-repeat center;\n\t\t\tbackground-size: 100%;\n}\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+module.exports = {
+	data:function(){
+		return {
+			imageStatus:"",
+			status:0,
+			url:"",
+			openId:"",
+			errorContent:""
+		}
+	},
+	computed:{
+		imageClass:function(){
+			switch(this.$route.params.status){
+				case -2:
+					this.imageStatus = "used";
+					this.errorContent="设备已经被使用";
+					break;
+				case -1:
+					this.imageStatus = "repair";
+					this.errorContent="设备离线";
+					break;
+				case 0	:
+					this.$router.push({
+	                    name:'router2',
+	                    query:{
+	                    	sn:this.sn,
+                      		openId:decodeURIComponent(this.openId)
+	                    },
+	                    params:{
+	                        sn:this.sn,
+	                        status:response.data.unifyStatus
+	                    }
+	                });
+					break;
+				default:
+					this.imageStatus = "error";
+					this.errorContent="设备故障";
+					break;		
+
+			}
+			return this.imageStatus
+		}
+	},
+	methods:{
+		ready:function(){
+			// this.sn = this.$route..sn;
+			// this.url = "#/?sn="+this.sn;
+			this.status = this.$route.params.status;
+			console.log(/*this.sn,*/this.status)
+		},
+		handleHref:function(){
+		
+			var href = location.href.split("?");
+			var condition = href.slice(1,href.length);
+
+			var cond = condition[0].split("&");
+			console.log(cond)
+
+			var arr = [];	
+			for(var i=0;i<cond.length;i++){
+				var name = cond[i].split("=")[0];
+				var value = cond[i].split("=")[1];
+				arr.push(value)					
+			}
+			return arr;					
+		}
+	},
+	reload:function(){},
+	created:function(){
+		var arr = this.handleHref();
+		this.openId = arr[1];
+		this.ready();
+
+	}
+}
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('div', {
+    staticClass: "state-content"
+  }, [_c('div', {
+    staticClass: "imgwrapper",
+    class: _vm.imageClass
+  }), _vm._v(" "), _c('p', [_vm._v(_vm._s(_vm.errorContent))])]), _vm._v(" "), _c('p', [_vm._v("选择：无模式")]), _vm._v(" "), _vm._m(0)])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
+    attrs: {
+      "id": "pay"
+    }
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("立即支付")])])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-4f000e82", module.exports)
+  }
+}
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(46)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(48),
+  /* template */
+  __webpack_require__(49),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "F:\\wamp\\www\\weixin\\js\\components\\statebefore.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] statebefore.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-47c6e77e", Component.options)
+  } else {
+    hotAPI.reload("data-v-47c6e77e", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(47);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("132d7a34", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue", function() {
+     var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js?id=data-v-47c6e77e!./../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./statebefore.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)();
+// imports
+
+
+// module
+exports.push([module.i, "\n.state-content{\n\t\ttext-align: center;\n    \tpadding: 1.2rem;\n    \tmargin-bottom:0.2rem;\n    \tbackground-color: #fff;\n}\n.state-content .imgwrapper{\n\t\theight:198px;\n\t\twidth:198px;\n\t\tdisplay:inline-block;\n}\n.state-content .imgwrapper.used{\n\t\tbackground:url('/weixin/img/img_use@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.error{\n\t\tbackground:url('/weixin/img/img_trouble@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content .imgwrapper.repair{\n\t\tbackground:url('/weixin/img/img_maintain@1x.png') no-repeat center;\n\t\tbackground-size: 100%;\n}\n.state-content p{\n\t\tpadding:0.5rem 0;\n\t\tcolor:#9B9B9B;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+	module.exports = {
+		data:function(){
+			return {
+				
+				statetext:"",
+				buttonText:"",
+				state:"",
+				leftTime:"",
+				createTime:"",
+				handleOpenId:"",
+				openId:""
+				/*time:{
+					type:function
+				}*/
+
+			}
+		},
+		methods:{ 
+			ready:function(){
+				var arr = this.handleHref();
+				this.sn = arr[0];
+				this.openId = arr[1];
+
+				this.handleOpenId = this.decode(decodeURIComponent(this.openId));
+				console.log("statebefore----ready"+this.openId,this.handleOpenId)
+				this.orderstatek();
+				
+			},
+			timer:function(){
+				
+				var time = setInterval(this.orderstate_ask,2000);
+				if(this.state == 20){
+					this.statetext ="设备解锁成功"
+					clearInterval(time);
+				}else{
+					time;
+				}
+			},
+			orderstatek:function(){
+				var that = this;
+				console.log("orderstate ask----"+this.openId,this.handleOpenId)
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					this.timer();
+					
+					console.log(response.data.data.orderStatus,that.state)
+				})
+			},      
+			orderstate_ask:function(){
+				var that = this;
+				this.$http.get("https://wanlida-test.yunext.com/external/getOrderStatus?sn="+this.sn+"&openId="+this.handleOpenId).then(function(response){
+					//this.orderState = response.data.data.orderStatus;
+					that.leftTime = response.data.data.leftTime;
+					that.orderNo =  response.data.data.orderNo;
+					that.state = response.data.data.orderStatus;
+					that.createTime = response.data.data.createTime;
+					that.stateJudge(that.state);
+					console.log(response.data.data.orderStatus,that.state)
+				})
+			},
+			jump:function(){
+				//if(this.state == 20){
+					console.log("jump----"+this.openId,this.handleOpenId)
+					this.$router.push({
+	                   	name:'router3',
+	                    query:{
+	                      sn:this.sn,
+	                      openId:decodeURIComponent(this.openId)
+	                    },
+	                    params:{
+	                      orderNo:this.orderNo,		
+	                      leftTime:this.leftTime,
+	                      createTime:this.createTime,
+	                      handleOpenId:this.handleOpenId
+	                    }
+        			});
+
+				//}
+			},
+			stateJudge:function(value){
+
+				switch(value){
+                   case 0:
+	                   this.statetext ="等待支付结果...";
+	                   break;
+                   case 10:
+                  	     this.statetext ="支付成功,向设备发送命令中...";	              	    
+	                	break;
+	                case -10:
+	                    this.statetext ="支付失败,请返回重新下单";
+	                    //this.buttonText = "重新支付";
+	                   break;
+	                case -20:
+	                    this.statetext ="设备解锁失败";
+	                    //this.buttonText="申请退款";                    
+	                   break; 
+	                case 20:
+	                    this.statetext ="设备解锁成功";
+	                   // this.buttonText="确定";	                   	                    	                    
+	                   break;      
+
+                }
+
+			},
+			handleHref:function(){
+			
+				var href = location.href.split("?");
+				var condition = href.slice(1,href.length);
+
+				var cond = condition[0].split("&");
+				console.log(cond)
+
+				var arr = [];	
+				for(var i=0;i<cond.length;i++){
+					var name = cond[i].split("=")[0];
+					var value = cond[i].split("=")[1];
+					arr.push(value)					
+				}
+				return arr;					
+			},
+			decode:function(input){
+		         // private property
+		        _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		 
+		        var output = "";
+		        var chr1, chr2, chr3;
+		        var enc1, enc2, enc3, enc4;
+		        var i = 0;
+		        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		        while (i < input.length) {
+		            enc1 = _keyStr.indexOf(input.charAt(i++));
+		            enc2 = _keyStr.indexOf(input.charAt(i++));
+		            enc3 = _keyStr.indexOf(input.charAt(i++));
+		            enc4 = _keyStr.indexOf(input.charAt(i++));
+		            chr1 = (enc1 << 2) | (enc2 >> 4);
+		            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+		            chr3 = ((enc3 & 3) << 6) | enc4;
+		            output = output + String.fromCharCode(chr1);
+		            if (enc3 != 64) {
+		                output = output + String.fromCharCode(chr2);
+		            }
+		            if (enc4 != 64) {
+		                output = output + String.fromCharCode(chr3);
+		            }
+		        }
+		        output = this._utf8_decode(output);
+		        return output;
+
+		    },
+		    _utf8_decode:function(utftext){
+		      var string = "";
+		        var i = 0;
+		        var c = c1 = c2 = 0;
+		        while ( i < utftext.length ) {
+		            c = utftext.charCodeAt(i);
+		            if (c < 128) {
+		                string += String.fromCharCode(c);
+		                i++;
+		            } else if((c > 191) && (c < 224)) {
+		                c2 = utftext.charCodeAt(i+1);
+		                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+		                i += 2;
+		            } else {
+		                c2 = utftext.charCodeAt(i+1);
+		                c3 = utftext.charCodeAt(i+2);
+		                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+		                i += 3;
+		            }
+		        }
+		        return string;
+
+			}
+		},	
+		created:function(){
+			
+			var arr = this.handleHref();
+			this.openId = arr[1];
+			console.log(this.openId)
+			this.ready();
+
+
+		}
+	}
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('div', {
+    staticClass: "state-content"
+  }, [_c('p', [_vm._v(_vm._s(_vm.statetext))])]), _vm._v(" "), _c('div', {
+    staticClass: "state-pay"
+  }, [_c('div', {
+    class: [_vm.state == 20 ? 'active' : ''],
+    attrs: {
+      "id": "pay"
+    },
+    on: {
+      "click": function($event) {
+        _vm.jump()
+      }
+    }
+  }, [_c('a', {
+    staticClass: "cart"
+  }, [_vm._v("确定")])])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-47c6e77e", module.exports)
   }
 }
 
